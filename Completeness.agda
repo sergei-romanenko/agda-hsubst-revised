@@ -5,8 +5,6 @@
 
 module Completeness where
 
---open import Data.Star
---open import Data.Star.Properties
 
 open import Data.Empty
 
@@ -24,91 +22,178 @@ vz   ⇘ˣ y    = vz
 vs x ⇘ˣ vz   = x
 vs x ⇘ˣ vs y = vs (x ⇘ˣ y)
 
-con-- : ∀ {Γ σ τ} (x : Var Γ σ) (y : Var (Γ - x) τ) →
+-∘- : ∀ {Γ σ τ} (x : Var Γ σ) (y : Var (Γ - x) τ) →
               (Γ - x) - y ≡ (Γ - (x ⇗ˣ y)) - (x ⇘ˣ y)
 
-con-- vz     y      = refl
-con-- (vs x) vz     =
-  refl
-con-- (vs {τ = τ} x) (vs y) =
-  cong (flip _,_ τ) (con-- x y)
+-∘- vz y = refl
+-∘- (vs x) vz = refl
+-∘- (vs {τ = τ} x) (vs y) = cong (flip _,_ τ) (-∘- x y)
 
--- ⇗∘substTm
+-- substTm∘⇗
 
-{-
---⇗∘substTm : ∀ {Γ σ τ} (x : Var Γ σ) (u : Tm (Γ - x) σ)
---              (t : Tm ((Γ - x) , σ) τ) →
-⇗∘substTm : ∀ {Γ σ τ} (x : Var Γ σ) (u : Tm (Γ - x) σ)
-              (t : Tm {!!} τ) →
-  x ⇗ substTm t vz u ≈βη substTm (vs x ⇗ t) vz (x ⇗ u)
-
-⇗∘substTm = {!!}
--}
 {-
 substTm∘⇗ : ∀ {Γ σ σ′ τ} (x : Var Γ σ) (u : Tm (Γ - x) σ′)
-                   (t : Tm ((Γ - x) , σ′) τ)  →
-           substTm (vs x ⇗ t) vz (x ⇗ u) ≈βη x ⇗ substTm t vz u
+                   (y : Var ? ?) (t : Tm ((Γ - x) , σ′) τ)  →
+           substTm (vs x ⇗ t) y (x ⇗ u) ≈βη x ⇗ substTm t y u
 
-substTm∘⇗ x u t = {!!}
+substTm∘⇗ x u y t = ?
+-}
+{-
+substTm∘⇗ x u (var x₁) = {!!}
+
+substTm∘⇗ x u (ƛ t) = begin
+  substTm (vs x ⇗ ƛ t) vz (x ⇗ u)
+    ≡⟨ refl ⟩
+  ƛ (substTm (vs (vs x) ⇗ t) (vs vz) (vz ⇗ (x ⇗ u)))
+    ≈⟨ ƛ-cong {!!} ⟩
+  ƛ (vs x ⇗ substTm t (vs vz) (vz ⇗ u))
+    ≡⟨ refl ⟩
+  x ⇗ substTm (ƛ t) vz u
+  ∎
+  where open βη-Reasoning
+
+substTm∘⇗ x u (t · t₁) = begin
+  substTm (vs x ⇗ (t · t₁)) vz (x ⇗ u)
+    ≡⟨ refl ⟩
+  substTm (vs x ⇗ t) vz (x ⇗ u) · substTm (vs x ⇗ t₁) vz (x ⇗ u)
+    ≈⟨ ·-cong (substTm∘⇗ x u t) (substTm∘⇗ x u t₁) ⟩
+  (x ⇗ substTm t vz u) · (x ⇗ substTm t₁ vz u)
+     ≡⟨ refl ⟩
+  x ⇗ substTm (t · t₁) vz u
+  ∎
+  where open βη-Reasoning
 -}
 
 -- var∘subst
 
 var∘subst : ∀ {Γ₁ Γ₂ τ} (p : Γ₁ ≡ Γ₂) (z : Var Γ₁ τ) →
-                var (subst (flip Var τ) p z) ≡ subst (flip Tm τ) p (var z)
+  var (subst (flip Var τ) p z) ≡ subst (flip Tm τ) p (var z)
+
 var∘subst refl z = refl
+
+-- ƛ∘subst
+
+ƛ∘subst : ∀ {Γ₁ Γ₂ σ τ} (p : Γ₁ ≡ Γ₂) (t : Tm (Γ₁ , σ) τ) →
+  ƛ (subst (flip Tm τ) (cong (flip _,_ σ) p) t) ≡
+    subst (flip Tm (σ ⇒ τ)) p (ƛ t)
+ƛ∘subst refl z = refl
+
+-- ·-subst
+
+·-subst : ∀ {Γ₁ Γ₂ σ τ} (p : Γ₁ ≡ Γ₂) →
+            (t₁ : Tm Γ₁ (σ ⇒ τ)) (t₂ : Tm Γ₁ σ) →
+  subst (flip Tm (σ ⇒ τ)) p t₁ · subst (flip Tm σ) p t₂ ≡
+    subst (flip Tm τ) p (t₁ · t₂)
+
+·-subst refl t₁ t₂ = refl
+
+-- vz∘subst
+
+vz∘subst : ∀ {Γ₁ Γ₂ τ} (p : Γ₁ ≡ Γ₂) →
+  (vz {Γ₂}) ≡ subst (flip Var τ) (cong (flip _,_ τ) p) (vz {Γ₁})
+
+vz∘subst refl = refl
+
+-- vs∘subst
+
+vs∘subst : ∀ {Γ₁ Γ₂ σ τ} (p : Γ₁ ≡ Γ₂)  (v : Var Γ₁ τ) →
+  vs (subst (flip Var τ) p v) ≡
+    subst (flip Var τ) (cong (flip _,_ σ) p) (vs v)
+
+vs∘subst refl v = refl
+
 
 -- ⇗ˣ∘⇗ˣ
 
-⇗ˣ∘⇗ˣ : ∀ {ρ Γ σ τ} (x : Var Γ σ) (y : Var (Γ - x) τ)
-          (v : Var ((Γ - x) - y) ρ) →
+⇗ˣ∘⇗ˣ : ∀ {Γ σ₁ σ₂ τ} (x : Var Γ σ₁) (y : Var (Γ - x) σ₂)
+          (v : Var ((Γ - x) - y) τ) →
         x ⇗ˣ (y ⇗ˣ v) ≡
-          (x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ (subst (flip Var ρ) (con-- x y) v))
+          (x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ (subst (flip Var τ) (-∘- x y) v))
 
-⇗ˣ∘⇗ˣ = {!!}
+⇗ˣ∘⇗ˣ vz y v = refl
+
+⇗ˣ∘⇗ˣ (vs x) vz v = refl
+
+⇗ˣ∘⇗ˣ (vs x) (vs y) (vz {σ = σ}) = begin
+  vs x ⇗ˣ (vs y ⇗ˣ vz)
+    ≡⟨ refl ⟩
+  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ vz)
+    ≡⟨ cong (λ z → vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ z)) (vz∘subst (-∘- x y)) ⟩
+  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ
+     subst (flip Var _) (cong (flip _,_ σ) (-∘- x y)) vz)
+    ≡⟨ refl ⟩
+  (vs x ⇗ˣ vs y) ⇗ˣ
+    ((vs x ⇘ˣ vs y) ⇗ˣ subst (flip Var σ) (-∘- (vs x) (vs y)) vz)
+  ∎
+  where open ≡-Reasoning
+
+⇗ˣ∘⇗ˣ (vs {Γ} {σ₁} x) (vs {σ = σ₂} {τ = τ′} y) (vs {σ = τ} v) =
+  begin
+  vs (x ⇗ˣ (y ⇗ˣ v))
+    ≡⟨ cong vs (⇗ˣ∘⇗ˣ x y v) ⟩
+  vs ((x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ
+    subst (flip Var τ) (-∘- x y) v))
+    ≡⟨ refl ⟩
+  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ
+    vs (subst (flip Var τ) (-∘- x y) v))
+    ≡⟨ cong (λ z → vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ z))
+            (vs∘subst (-∘- x y) v) ⟩
+  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ
+    subst (flip Var τ) (cong (flip _,_  τ′) (-∘- x y)) (vs v))
+  ∎
+  where open ≡-Reasoning
 
 -- ⇗∘⇗
 
 ⇗∘⇗ : ∀ {Γ σ₁ σ₂ τ} (x : Var Γ σ₁) (y : Var (Γ - x) σ₂)
            (t : Tm ((Γ - x) - y) τ) →
     x ⇗ (y ⇗ t) ≡
-      (x ⇗ˣ y) ⇗ ((x ⇘ˣ  y) ⇗ (subst (flip Tm τ) (con-- x y) t))
+      (x ⇗ˣ y) ⇗ ((x ⇘ˣ  y) ⇗ (subst (flip Tm τ) (-∘- x y) t))
 
 ⇗∘⇗ x y (var {σ = σ} x₁) = begin
   x ⇗ (y ⇗ var x₁)
     ≡⟨ refl ⟩
   var (x ⇗ˣ (y ⇗ˣ x₁))
-    ≡⟨ ? ⟩
-  ?
-    ≡⟨ ⇗∘⇗ x y (var x₁) ⟩
-  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ subst (flip Tm σ) (con-- x y) (var x₁))
-{-
-  x ⇗ (y ⇗ var x₁)
-    ≡⟨ refl ⟩
-  var (x ⇗ˣ (y ⇗ˣ x₁))
     ≡⟨ cong var (⇗ˣ∘⇗ˣ x y x₁) ⟩
-  var ((x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ subst (flip Var σ) (con-- x y) x₁))
+  var ((x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ subst (flip Var σ) (-∘- x y) x₁))
     ≡⟨ refl ⟩
-  (x ⇗ˣ y) ⇗ var ((x ⇘ˣ y) ⇗ˣ subst (flip Var σ) (con-- x y) x₁)
+  (x ⇗ˣ y) ⇗ var ((x ⇘ˣ y) ⇗ˣ subst (flip Var σ) (-∘- x y) x₁)
     ≡⟨ refl ⟩
-  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ var (subst (flip Var σ) (con-- x y) x₁))
+  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ var (subst (flip Var σ) (-∘- x y) x₁))
     ≡⟨ cong (λ t → (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ t))
-            (var∘subst (con-- x y) x₁) ⟩
-  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ subst (flip Tm σ) (con-- x y) (var x₁))
--}
+            (var∘subst (-∘- x y) x₁) ⟩
+  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ subst (flip Tm σ) (-∘- x y) (var x₁))
   ∎
   where open ≡-Reasoning
 
-⇗∘⇗ x y (ƛ {σ = σ} {τ = τ} t) = begin
+⇗∘⇗ {Γ} {σ₁} {σ₂} {σ ⇒ .τ} x y (ƛ {τ = τ} t) = begin
   x ⇗ (y ⇗ ƛ t)
     ≡⟨ refl ⟩
   ƛ (vs x ⇗ (vs y ⇗ t))
-    ≡⟨ ⇗∘⇗ x y (ƛ t) ⟩
-  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ subst (flip Tm (σ ⇒ τ)) (con-- x y) (ƛ t))
+    ≡⟨ cong ƛ (⇗∘⇗ (vs x) (vs y) t) ⟩
+  ƛ (vs (x ⇗ˣ y) ⇗ (vs (x ⇘ˣ y) ⇗
+      subst (flip Tm τ) (cong (flip _,_ σ) (-∘- x y)) t))
+    ≡⟨ refl ⟩
+  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗
+    ƛ (subst (flip Tm τ) (cong (flip _,_ σ) (-∘- x y)) t))
+    ≡⟨ cong (λ u → (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ u)) (ƛ∘subst (-∘- x y) t) ⟩
+  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗
+    subst (flip Tm (σ ⇒ τ)) (-∘- x y) (ƛ t))
   ∎
   where open ≡-Reasoning
 
-⇗∘⇗ x y (t₁ · t₂) = {!!}
+⇗∘⇗ {Γ} {σ₁} {σ₂} {τ} x y (_·_ {σ = σ′} t₁ t₂) = begin
+  x ⇗ (y ⇗ (t₁ · t₂))
+    ≡⟨ refl ⟩
+  (x ⇗ (y ⇗ t₁)) · (x ⇗ (y ⇗ t₂))
+    ≡⟨ cong₂ _·_ (⇗∘⇗ x y t₁) (⇗∘⇗ x y t₂) ⟩
+  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗
+    (subst (flip Tm (σ′ ⇒ τ)) (-∘- x y) t₁ ·
+      subst (flip Tm σ′) (-∘- x y) t₂))
+    ≡⟨ cong (λ t → (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ t)) (·-subst (-∘- x y) t₁ t₂) ⟩
+  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ subst (flip Tm τ) (-∘- x y) (t₁ · t₂))
+  ∎
+  where open ≡-Reasoning
 
 
 -- ⇗-cong
@@ -154,7 +239,6 @@ var∘subst refl z = refl
   x ⇗ t
   ∎
   where open βη-Reasoning
-
 
 -- substVar∘⟳ˣ
 
@@ -419,3 +503,4 @@ mutual
   t₁ · t₂
   ∎
   where open βη-Reasoning
+
