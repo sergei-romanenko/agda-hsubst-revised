@@ -48,9 +48,9 @@ vs x ⇗ˣ vs v = vs (x ⇗ˣ v)
 
 -- Variable equality
 
-data VarDiff : ∀ {Γ σ τ} → (x : Var Γ σ) (v : Var Γ τ) → Set where
-  ⟳ˣ   : ∀ {Γ σ} (x : Var Γ σ) → VarDiff x x
-  _↗ˣ_ : ∀ {Γ σ τ} (x : Var Γ σ) (v : Var (Γ - x) τ) → VarDiff x (x ⇗ˣ v)
+data VarDiff {Γ : Con} : {σ τ : Ty} → (x : Var Γ σ) (v : Var Γ τ) → Set where
+  ⟳ˣ   : ∀ {σ} (x : Var Γ σ) → VarDiff x x
+  _↗ˣ_ : ∀ {σ τ} (x : Var Γ σ) (v : Var (Γ - x) τ) → VarDiff x (x ⇗ˣ v)
 
 varDiff : ∀ {Γ σ τ} → (x : Var Γ σ) (v : Var Γ τ) → VarDiff x v
 
