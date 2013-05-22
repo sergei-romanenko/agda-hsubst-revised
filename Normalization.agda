@@ -73,7 +73,7 @@ mutual
 
   (ƛ n) [ x ≔ u ] = ƛ (n [ vs x ≔ vz ⇗ⁿ u ])
   (v · ns) [ x ≔ u ] with varDiff x v
-  (.x · ns) [ x ≔ u ] | ⟳ˣ .x = u ◇ (ns < x ≔ u >)
+  (.x · ns) [ x ≔ u ] | ⟳ˣ = u ◇ (ns < x ≔ u >)
   (.(x ⇗ˣ v) · ns) [ x ≔ u ] | .x ↗ˣ v = v · (ns < x ≔ u >)
 
   _<_≔_> : ∀ {Γ σ τ₁ τ₂} (ns : Sp Γ τ₁ τ₂) (x : Var Γ σ) (u : Nf (Γ - x) σ) →

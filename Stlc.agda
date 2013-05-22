@@ -49,16 +49,16 @@ vs x ⇗ˣ vs v = vs (x ⇗ˣ v)
 -- Variable equality
 
 data VarDiff {Γ : Con} : {σ τ : Ty} → (x : Var Γ σ) (v : Var Γ τ) → Set where
-  ⟳ˣ   : ∀ {σ} (x : Var Γ σ) → VarDiff x x
+  ⟳ˣ   : ∀ {σ} {x : Var Γ σ} → VarDiff x x
   _↗ˣ_ : ∀ {σ τ} (x : Var Γ σ) (v : Var (Γ - x) τ) → VarDiff x (x ⇗ˣ v)
 
 varDiff : ∀ {Γ σ τ} → (x : Var Γ σ) (v : Var Γ τ) → VarDiff x v
 
-varDiff vz vz = ⟳ˣ vz
+varDiff vz vz = ⟳ˣ
 varDiff vz (vs x) = vz ↗ˣ x
 varDiff (vs x) vz = vs x ↗ˣ vz
 varDiff (vs x) (vs v) with varDiff x v
-varDiff (vs x) (vs .x) | ⟳ˣ .x = ⟳ˣ (vs x)
+varDiff (vs x) (vs .x) | ⟳ˣ = ⟳ˣ
 varDiff (vs x) (vs .(x ⇗ˣ v)) | .x ↗ˣ v = vs x ↗ˣ vs v
 
 -- Term weakening
@@ -79,7 +79,7 @@ substVar : ∀ {Γ σ τ} (v : Var Γ τ) (x : Var Γ σ) (t : Tm (Γ - x) σ) �
              Tm (Γ - x) τ
 
 substVar v x t with varDiff x v
-substVar .x x t | ⟳ˣ .x = t
+substVar .x x t | ⟳ˣ = t
 substVar .(x ⇗ˣ v) x t | .x ↗ˣ v = var v
 
 substTm : ∀ {Γ σ τ} (t : Tm Γ τ) (x : Var Γ σ) (u : Tm (Γ - x) σ) →
