@@ -5,9 +5,6 @@
 
 module Completeness where
 
-
-open import Data.Empty
-
 open import Function
 
 open import Relation.Binary.PropositionalEquality as P
