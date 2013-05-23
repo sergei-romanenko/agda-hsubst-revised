@@ -9,4 +9,5 @@ Based on the paper
 > DOI=10.1145/1863597.1863601
 >[http://doi.acm.org/10.1145/1863597.1863601](http://doi.acm.org/10.1145/1863597.1863601)
 
-*Note*. This code is only based on the text of the paper. I haven't looked into the sources accompanying the paper.
+*Note*. This code is based on the text of the paper, which contains enough information
+for the proofs to be reconstructed.

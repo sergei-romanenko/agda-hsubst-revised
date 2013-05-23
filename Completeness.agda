@@ -362,25 +362,25 @@ mutual
   ⌈⌉∘⇗ⁿ : ∀ {Γ σ τ} (x : Var Γ σ) (n : Nf (Γ - x) τ) →
     ⌈ x ⇗ⁿ n ⌉ ≈βη x ⇗ ⌈ n ⌉
 
-  ⌈⌉∘⇗ⁿ x (ƛ n) = begin
-    ⌈ x ⇗ⁿ ƛ n ⌉
+  ⌈⌉∘⇗ⁿ x (ƛⁿ n) = begin
+    ⌈ x ⇗ⁿ ƛⁿ n ⌉
       ≡⟨ refl ⟩
     ƛ ⌈ vs x ⇗ⁿ n ⌉
       ≈⟨ ƛ-cong (⌈⌉∘⇗ⁿ (vs x) n) ⟩
     ƛ (vs x ⇗ ⌈ n ⌉)
       ≡⟨ refl ⟩
-    x ⇗ ⌈ ƛ n ⌉
+    x ⇗ ⌈ ƛⁿ n ⌉
     ∎
     where open βη-Reasoning
 
-  ⌈⌉∘⇗ⁿ x (x′ · ns) = begin
-    ⌈ x ⇗ⁿ (x′ · ns) ⌉
+  ⌈⌉∘⇗ⁿ x (x′ ·ⁿ ns) = begin
+    ⌈ x ⇗ⁿ (x′ ·ⁿ ns) ⌉
       ≡⟨ refl ⟩
     var (x ⇗ˣ x′) ·⌈ x ⇗ˢ ns ⌉
       ≈⟨ ·⌈⌉∘⇗ⁿ x (var x′) ns ⟩
     x ⇗ (var x′ ·⌈ ns ⌉)
       ≡⟨ refl ⟩
-    x ⇗ ⌈ x′ · ns ⌉
+    x ⇗ ⌈ x′ ·ⁿ ns ⌉
     ∎
     where open βη-Reasoning
 
@@ -436,8 +436,8 @@ mutual
   ⌈⌉∘[≔] : ∀ {Γ σ τ} (n : Nf Γ τ) (x : Var Γ σ) (u : Nf (Γ - x) σ) →
     ⌈ n [ x ≔ u ] ⌉ ≈βη substTm ⌈ n ⌉ x ⌈ u ⌉
 
-  ⌈⌉∘[≔] (ƛ n) x u = begin
-    ⌈ ƛ n [ x ≔ u ] ⌉
+  ⌈⌉∘[≔] (ƛⁿ n) x u = begin
+    ⌈ ƛⁿ n [ x ≔ u ] ⌉
       ≡⟨ refl ⟩
     ƛ ⌈ n [ vs x ≔ vz ⇗ⁿ u ] ⌉
       ≈⟨ ƛ-cong (⌈⌉∘[≔] n (vs x) (vz ⇗ⁿ u)) ⟩
@@ -445,13 +445,13 @@ mutual
       ≈⟨ ƛ-cong (substTm-cong ⌈ n ⌉ (vs x) (⌈⌉∘⇗ⁿ vz u)) ⟩
     ƛ (substTm ⌈ n ⌉ (vs x) (vz ⇗ ⌈ u ⌉))
       ≡⟨ refl ⟩
-    substTm ⌈ ƛ n ⌉ x ⌈ u ⌉
+    substTm ⌈ ƛⁿ n ⌉ x ⌈ u ⌉
     ∎
     where open βη-Reasoning
 
-  ⌈⌉∘[≔] (x′ · ns) x u with varDiff x x′
+  ⌈⌉∘[≔] (x′ ·ⁿ ns) x u with varDiff x x′
 
-  ⌈⌉∘[≔] (.x · ns) x u | ⟳ˣ = begin
+  ⌈⌉∘[≔] (.x ·ⁿ ns) x u | ⟳ˣ = begin
     ⌈ u ◇ (ns < x ≔ u >) ⌉
       ≈⟨ ⌈⌉∘◇ u (ns < x ≔ u >) ⟩
     ⌈ u ⌉ ·⌈ ns < x ≔ u > ⌉
@@ -462,7 +462,7 @@ mutual
     ∎
     where open βη-Reasoning
 
-  ⌈⌉∘[≔] (.(x ⇗ˣ v) · ns) x u | .x ↗ˣ v = begin
+  ⌈⌉∘[≔] (.(x ⇗ˣ v) ·ⁿ ns) x u | .x ↗ˣ v = begin
     var v ·⌈ ns < x ≔ u > ⌉
       ≡⟨ cong (λ z → z ·⌈ ns < x ≔ u > ⌉)
               (sym $ substVar∘⇗ˣ x ⌈ u ⌉ v) ⟩
@@ -517,8 +517,8 @@ mutual
   ⌈⌉∘·β : ∀ {Γ σ τ} (n₁ : Nf Γ (σ ⇒ τ)) (n₂ : Nf Γ σ) →
     ⌈ n₁ ·β n₂ ⌉ ≈βη ⌈ n₁ ⌉ · ⌈ n₂ ⌉
 
-  ⌈⌉∘·β (ƛ n₁) n₂ = begin
-    ⌈ ƛ n₁ ·β n₂ ⌉
+  ⌈⌉∘·β (ƛⁿ n₁) n₂ = begin
+    ⌈ ƛⁿ n₁ ·β n₂ ⌉
       ≡⟨ refl ⟩
     ⌈ n₁ [ vz ≔ n₂ ] ⌉
       ≈⟨ ⌈⌉∘[≔] n₁ vz n₂ ⟩
@@ -526,7 +526,7 @@ mutual
       ≈⟨ βη-sym ≈-β ⟩
     ƛ ⌈ n₁ ⌉ · ⌈ n₂ ⌉
       ≡⟨ refl ⟩
-    ⌈ ƛ n₁ ⌉ · ⌈ n₂ ⌉
+    ⌈ ƛⁿ n₁ ⌉ · ⌈ n₂ ⌉
     ∎
     where open βη-Reasoning
 

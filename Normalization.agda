@@ -7,8 +7,8 @@ open import Stlc
 mutual
 
   data Nf : Con → Ty → Set where
-    ƛ   : ∀ {Γ σ τ} (n : Nf (Γ , σ) τ) → Nf Γ (σ ⇒ τ)
-    _·_ : ∀ {Γ σ} (x : Var Γ σ) → (ns : Sp Γ σ ○) → Nf Γ ○
+    ƛⁿ   : ∀ {Γ σ τ} (n : Nf (Γ , σ) τ) → Nf Γ (σ ⇒ τ)
+    _·ⁿ_ : ∀ {Γ σ} (x : Var Γ σ) → (ns : Sp Γ σ ○) → Nf Γ ○
  
   data Sp : Con → Ty → Ty → Set where
     ε : ∀ {Γ σ} → Sp Γ σ σ
@@ -20,8 +20,8 @@ mutual
 
   ⌈_⌉ : ∀ {Γ σ} (n : Nf Γ σ) → Tm Γ σ
 
-  ⌈ ƛ n ⌉ = ƛ ⌈ n ⌉
-  ⌈ x · ns ⌉ = var x ·⌈ ns ⌉
+  ⌈ ƛⁿ n ⌉ = ƛ ⌈ n ⌉
+  ⌈ x ·ⁿ ns ⌉ = var x ·⌈ ns ⌉
 
   _·⌈_⌉ : ∀ {Γ σ τ} (t : Tm Γ σ) (ns : Sp Γ σ τ) → Tm Γ τ
 
@@ -34,8 +34,8 @@ mutual
 
   _⇗ⁿ_ : ∀ {Γ σ τ} (x : Var Γ σ) (n : Nf (Γ - x) τ) → Nf Γ τ
 
-  x ⇗ⁿ ƛ n = ƛ (vs x ⇗ⁿ n)
-  x ⇗ⁿ (y · ns) = (x ⇗ˣ y) · (x ⇗ˢ ns)
+  x ⇗ⁿ ƛⁿ n = ƛⁿ (vs x ⇗ⁿ n)
+  x ⇗ⁿ (y ·ⁿ ns) = (x ⇗ˣ y) ·ⁿ (x ⇗ˢ ns)
 
   _⇗ˢ_ : ∀ {Γ σ τ₁ τ₂} (x : Var Γ σ) (n : Sp (Γ - x) τ₁ τ₂) → Sp Γ τ₁ τ₂
 
@@ -54,9 +54,9 @@ Sp+Nf (n′ , ns) n = n′ , Sp+Nf ns n
 
 _·η_ : ∀ {τ Γ σ} (x : Var Γ σ) (ns : Sp Γ σ τ) → Nf Γ τ
 
-_·η_ {○} x ns = x · ns
+_·η_ {○} x ns = x ·ⁿ ns
 _·η_ {τ₁ ⇒ τ₂} x ns =
-  ƛ (vs x ·η (Sp+Nf (vz ⇗ˢ ns) (vz ·η ε)))
+  ƛⁿ (vs x ·η (Sp+Nf (vz ⇗ˢ ns) (vz ·η ε)))
 
 
 -- β-reduction
@@ -68,13 +68,13 @@ _·η_ {τ₁ ⇒ τ₂} x ns =
 
 mutual
 
-  _[_≔_] : ∀ {Γ σ τ} (t : Nf Γ τ) (x : Var Γ σ) (u : Nf (Γ - x) σ) →
+  _[_≔_] : ∀ {Γ σ τ} (n : Nf Γ τ) (x : Var Γ σ) (u : Nf (Γ - x) σ) →
               Nf (Γ - x) τ
 
-  (ƛ n) [ x ≔ u ] = ƛ (n [ vs x ≔ vz ⇗ⁿ u ])
-  (v · ns) [ x ≔ u ] with varDiff x v
-  (.x · ns) [ x ≔ u ] | ⟳ˣ = u ◇ (ns < x ≔ u >)
-  (.(x ⇗ˣ v) · ns) [ x ≔ u ] | .x ↗ˣ v = v · (ns < x ≔ u >)
+  (ƛⁿ n) [ x ≔ u ] = ƛⁿ (n [ vs x ≔ vz ⇗ⁿ u ])
+  (v ·ⁿ ns) [ x ≔ u ] with varDiff x v
+  (.x ·ⁿ ns) [ x ≔ u ] | ⟳ˣ = u ◇ (ns < x ≔ u >)
+  (.(x ⇗ˣ v) ·ⁿ ns) [ x ≔ u ] | .x ↗ˣ v = v ·ⁿ (ns < x ≔ u >)
 
   _<_≔_> : ∀ {Γ σ τ₁ τ₂} (ns : Sp Γ τ₁ τ₂) (x : Var Γ σ) (u : Nf (Γ - x) σ) →
               Sp (Γ - x) τ₁ τ₂
@@ -89,12 +89,12 @@ mutual
 
   _·β_ : ∀ {Γ σ τ} (n₁ : Nf Γ (σ ⇒ τ)) (n₂ : Nf Γ σ) → Nf Γ τ
 
-  ƛ n₁ ·β n₂ = n₁ [ vz ≔ n₂ ]
+  ƛⁿ n₁ ·β n₂ = n₁ [ vz ≔ n₂ ]
 
 -- The normalization function
 
 nf : ∀ {Γ σ} (t : Tm Γ σ) → Nf Γ σ
 
 nf (var x)   = x ·η ε
-nf (ƛ t)     = ƛ (nf t)
+nf (ƛ t)     = ƛⁿ (nf t)
 nf (t₁ · t₂) = nf t₁ ·β nf t₂

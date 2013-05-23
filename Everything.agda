@@ -3,4 +3,4 @@ module Everything where
 import Stlc
 import Normalization
 import BetaEta
---import Completeness
+import Completeness
