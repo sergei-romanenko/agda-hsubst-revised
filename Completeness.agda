@@ -29,11 +29,6 @@ refl /Var/ t = t
 _/Tm/_ : ∀ {Γ₁ Γ₂ σ} → Γ₁ ≡ Γ₂ → Tm Γ₁ σ → Tm Γ₂ σ
 refl /Tm/ t = t
 
-{-
-con-cong : ∀ {Γ₁ Γ₂ : Con} {σ : Ty} →
-             (Γ₁ ≡ Γ₂) →  _≡_ {A = Con} (Γ₁ , σ) (Γ₂ , σ)
-con-cong refl = refl
--}
 
 -- _⇘ˣ_
 
@@ -50,30 +45,6 @@ vs x ⇘ˣ vs y = vs (x ⇘ˣ y)
 -∘- (vs x) vz = refl
 -∘- (vs {τ = τ} x) (vs y) = cong (flip _,_ τ) (-∘- x y)
 
-{-
--- _<ˣ_
-
-data _<ˣ_ : {Γ : Con} {σ τ : Ty} (x : Var Γ σ) (y : Var Γ τ) → Set where
-  z<ˣy : ∀ {Γ σ σ′} {y : Var (Γ , σ) σ′} → (vz {Γ , σ} {σ}) <ˣ (vs y)
-  s<ˣs : ∀ {Γ σ σ′ τ} {x : Var Γ σ} {y : Var Γ σ′} →
-           x <ˣ y → vs {Γ} {σ} {τ} x <ˣ vs y 
--}
-{-
-_,,_ : (Γ₁ Γ₂ : Con) → Con
-
-Γ₁ ,, ε = Γ₁
-Γ₁ ,, (Γ₂ , σ) = (Γ₁ ,, Γ₂) , σ
-
-_+ˣ_ : {Γ : Con} {σ : Ty} (Δ : Con) (x : Var Γ σ) → Var (Γ ,, Δ) σ
-
-ε +ˣ x = x
-(Δ , σ₁) +ˣ x = vs (Δ +ˣ x)
-
-_⇗⇗_ : {Γ : Con} {σ : Ty} (Δ : Con) (t : Tm Γ σ) → Tm (Γ ,, Δ) σ
-
-ε ⇗⇗ t = t
-(Δ , σ₁) ⇗⇗ t = vz ⇗ (Δ ⇗⇗ t)
--}
 
 -- /Var/∘var
 
@@ -123,6 +94,41 @@ vs∘/Var/ : ∀ {Γ₁ Γ₂ σ τ} (p : Γ₁ ≡ Γ₂)  (v : Var Γ₁ τ) �
 vs∘/Var/ refl v = refl
 
 
+-- varDiff-⟳ˣ
+
+varDiff-⟳ˣ :  ∀ {Γ σ} (x : Var Γ σ) →
+  varDiff x x ≡ ⟳ˣ
+
+varDiff-⟳ˣ vz = refl
+varDiff-⟳ˣ (vs x) rewrite varDiff-⟳ˣ x = refl
+
+-- varDiff-↗ˣ
+
+varDiff-↗ˣ : ∀ {Γ σ τ} (x : Var Γ σ) (y : Var (Γ - x) τ) →
+  varDiff x (x ⇗ˣ y) ≡ x ↗ˣ y
+
+varDiff-↗ˣ vz y = refl
+varDiff-↗ˣ (vs x) vz = refl
+varDiff-↗ˣ (vs x) (vs y) rewrite varDiff-↗ˣ x y = refl
+
+
+-- substVar∘⟳ˣ
+
+substVar∘⟳ˣ : ∀ {Γ σ} (x : Var Γ σ) (u : Tm (Γ - x) σ) →
+  substVar x x u ≡ u
+
+substVar∘⟳ˣ x u rewrite varDiff-⟳ˣ x =
+  refl
+
+-- substVar∘⇗ˣ
+
+substVar∘⇗ˣ : ∀ {Γ σ τ} (x : Var Γ σ) (u : Tm (Γ - x) σ) (v : Var (Γ - x) τ) →
+  substVar (x ⇗ˣ v) x u ≡ var v
+
+substVar∘⇗ˣ x u v rewrite varDiff-↗ˣ x v =
+  refl
+
+
 -- ⇗ˣ∘⇗ˣ
 
 ⇗ˣ∘⇗ˣ : ∀ {Γ σ₁ σ₂ τ} (x : Var Γ σ₁) (y : Var (Γ - x) σ₂)
@@ -154,7 +160,7 @@ vs∘/Var/ refl v = refl
     ≡⟨ refl ⟩
   vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ vs (-∘- x y /Var/ v))
     ≡⟨ cong (λ z → vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ z)) (vs∘/Var/ (-∘- x y) v) ⟩
-  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ (cong (flip _,_  τ′) (-∘- x y) /Var/ vs v))
+  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ (cong (flip _,_ τ′) (-∘- x y) /Var/ vs v))
     ≡⟨⟩
   (vs x ⇗ˣ vs y) ⇗ˣ ((vs x ⇘ˣ vs y) ⇗ˣ (-∘- (vs x) (vs y) /Var/ vs v))
   ∎
@@ -209,6 +215,7 @@ vs∘/Var/ refl v = refl
   ∎
   where open ≡-Reasoning
 
+
 -- ⇗∘substTm
 
 ⇗∘substTm : ∀ {Γ σ σ′ τ} (x : Var Γ σ)
@@ -217,7 +224,21 @@ vs∘/Var/ refl v = refl
           (x ⇘ˣ y) ⇗ (-∘- x y /Tm/ substTm t y u) ≡
             substTm (x ⇗ t) (x ⇗ˣ y) ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ u))
 
-⇗∘substTm x y u (var x₁) = {!!}
+⇗∘substTm x y u (var x′) with varDiff y x′
+
+⇗∘substTm x y u (var .y) | ⟳ˣ
+  rewrite varDiff-⟳ˣ (x ⇗ˣ y) = refl
+
+⇗∘substTm x y u (var .(y ⇗ˣ v)) | .y ↗ˣ v
+  rewrite ⇗ˣ∘⇗ˣ x y v
+        | varDiff-↗ˣ (x ⇗ˣ y) ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ v)) = begin
+  (x ⇘ˣ y) ⇗ (-∘- x y /Tm/ var v)
+    ≡⟨ cong (_⇗_ (x ⇘ˣ y)) (/Tm/∘var (-∘- x y) v) ⟩
+  (x ⇘ˣ y) ⇗ (var (-∘- x y /Var/ v))
+    ≡⟨⟩
+  var ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ v))
+  ∎
+  where open ≡-Reasoning
 
 ⇗∘substTm x y u (ƛ {σ = σ}  t) =
   begin
@@ -230,9 +251,9 @@ vs∘/Var/ refl v = refl
   ƛ ((vs x ⇘ˣ vs y) ⇗ ((-∘- (vs x) (vs y)) /Tm/ substTm t (vs y) (vz ⇗ u)))
     ≡⟨ cong ƛ (⇗∘substTm (vs x) (vs y) (vz ⇗ u) t) ⟩
   ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y))
-     (vs (x ⇘ˣ y) ⇗ (cong (flip _,_ σ) (-∘- x y) /Tm/ (vz ⇗ u))))
+    (vs (x ⇘ˣ y) ⇗ (cong (flip _,_ σ) (-∘- x y) /Tm/ (vz ⇗ u))))
     ≡⟨ cong (λ z → ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y)) (vs (x ⇘ˣ y) ⇗ z)))
-         (/Tm/∘vz⇗ (-∘- x y) u) ⟩
+            (/Tm/∘vz⇗ (-∘- x y) u) ⟩
   ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y)) (vs (x ⇘ˣ y) ⇗ (vz ⇗ (-∘- x y /Tm/ u))))
     ≡⟨ cong (λ z → ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y)) z))
             (⇗∘⇗ (vs (x ⇘ˣ y)) vz (-∘- x y /Tm/ u)) ⟩
@@ -298,21 +319,6 @@ vs∘/Var/ refl v = refl
   x ⇗ t
   ∎
   where open βη-Reasoning
-
--- substVar∘⟳ˣ
-
-substVar∘⟳ˣ : ∀ {Γ σ} (x : Var Γ σ) (u : Tm (Γ - x) σ) →
-  varDiff x x ≡ ⟳ˣ → substVar x x u ≈βη u
-
-substVar∘⟳ˣ x u h rewrite h =
-  βη-refl
-
--- substVar∘⇗ˣ
-
-substVar∘⇗ˣ : ∀ {Γ σ τ} (x : Var Γ σ) (u : Tm (Γ - x) σ) (v : Var (Γ - x) τ) →
-  varDiff x (x ⇗ˣ v) ≡ x ↗ˣ v → substVar (x ⇗ˣ v) x u ≡ var v
-
-substVar∘⇗ˣ x u v h rewrite h = refl
 
 -- substTm-cong
 
@@ -443,23 +449,23 @@ mutual
     ∎
     where open βη-Reasoning
 
-  ⌈⌉∘[≔] (x′ · ns) x u with varDiff x x′ | inspect (varDiff x) x′
-  ⌈⌉∘[≔] (.x · ns) x u | ⟳ˣ | [ x≡ ] = begin
+  ⌈⌉∘[≔] (x′ · ns) x u with varDiff x x′
+
+  ⌈⌉∘[≔] (.x · ns) x u | ⟳ˣ = begin
     ⌈ u ◇ (ns < x ≔ u >) ⌉
       ≈⟨ ⌈⌉∘◇ u (ns < x ≔ u >) ⟩
     ⌈ u ⌉ ·⌈ ns < x ≔ u > ⌉
-      ≈⟨ ·⌈⌉-cong (ns < x ≔ u >) (βη-sym $ substVar∘⟳ˣ x ⌈ u ⌉ x≡) ⟩
+      ≡⟨ sym $ cong (flip _·⌈_⌉ (ns < x ≔ u >)) (substVar∘⟳ˣ x ⌈ u ⌉) ⟩
     substVar x x ⌈ u ⌉ ·⌈ ns < x ≔ u > ⌉
       ≈⟨ ⌈⌉∘<≔> (var x) ns x u ⟩
     substTm (var x ·⌈ ns ⌉) x ⌈ u ⌉
     ∎
     where open βη-Reasoning
 
-
-  ⌈⌉∘[≔] (.(x ⇗ˣ v) · ns) x u | .x ↗ˣ v | [ x≡ ] = begin
+  ⌈⌉∘[≔] (.(x ⇗ˣ v) · ns) x u | .x ↗ˣ v = begin
     var v ·⌈ ns < x ≔ u > ⌉
       ≡⟨ cong (λ z → z ·⌈ ns < x ≔ u > ⌉)
-              (sym $ substVar∘⇗ˣ x ⌈ u ⌉ v x≡) ⟩
+              (sym $ substVar∘⇗ˣ x ⌈ u ⌉ v) ⟩
     substTm (var (x ⇗ˣ v)) x ⌈ u ⌉ ·⌈ ns < x ≔ u > ⌉
       ≈⟨ ⌈⌉∘<≔> (x ⇗ var v) ns x u ⟩
     substTm (var (x ⇗ˣ v) ·⌈ ns ⌉) x ⌈ u ⌉
@@ -562,4 +568,3 @@ mutual
   t₁ · t₂
   ∎
   where open βη-Reasoning
-
