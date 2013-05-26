@@ -12,118 +12,7 @@ open import Relation.Binary.PropositionalEquality as P
 open import Stlc
 open import Normalization
 open import BetaEta
-
-
--- _/Var/_
--- `Γ₁≡Γ₂ /Var/ t` is a shortcut for `subst (flip Var σ) Γ₁≡Γ₂ t`
-
-_/Var/_ : ∀ {Γ₁ Γ₂ σ} → Γ₁ ≡ Γ₂ → Var Γ₁ σ → Var Γ₂ σ
-refl /Var/ t = t
-
--- _/Tm/_
--- `Γ₁≡Γ₂ /Tm/ t` is a shortcut for `subst (flip Tm σ) Γ₁≡Γ₂ t`
-
-_/Tm/_ : ∀ {Γ₁ Γ₂ σ} → Γ₁ ≡ Γ₂ → Tm Γ₁ σ → Tm Γ₂ σ
-refl /Tm/ t = t
-
-
--- _⇘ˣ_
-
-_⇘ˣ_ : ∀ {Γ σ τ} (x : Var Γ σ) (y : Var (Γ - x) τ) → Var (Γ - (x ⇗ˣ y)) σ
-
-vz   ⇘ˣ y    = vz
-vs x ⇘ˣ vz   = x
-vs x ⇘ˣ vs y = vs (x ⇘ˣ y)
-
--∘- : ∀ {Γ σ τ} (x : Var Γ σ) (y : Var (Γ - x) τ) →
-              (Γ - x) - y ≡ (Γ - (x ⇗ˣ y)) - (x ⇘ˣ y)
-
--∘- vz y = refl
--∘- (vs x) vz = refl
--∘- (vs {τ = τ} x) (vs y) = cong (flip _,_ τ) (-∘- x y)
-
-
--- /Var/∘var
-
-/Var/∘var : ∀ {Γ₁ Γ₂ τ} (p : Γ₁ ≡ Γ₂) (z : Var Γ₁ τ) →
-  p /Tm/ (var z) ≡ var (p /Var/ z)
-
-/Var/∘var refl z = refl
-
--- /Tm/∘var
-
-/Tm/∘var : ∀ {σ Γ₁ Γ₂} (p : Γ₁ ≡ Γ₂) (v : Var Γ₁ σ) →
-  p /Tm/ (var v) ≡ var (p /Var/ v)
-/Tm/∘var refl _ = refl
-
--- /Tm/∘ƛ
-
-/Tm/∘ƛ : ∀ {σ Γ₁ Γ₂ τ} (p : Γ₁ ≡ Γ₂) (t : Tm (Γ₁ , σ) τ) →
-  p /Tm/ (ƛ t) ≡ ƛ (cong (flip _,_ σ) p /Tm/ t)
-/Tm/∘ƛ refl _ = refl
-
--- /Tm/∘·
-
-/Tm/∘· : ∀ {σ Γ₁ Γ₂ τ} (p : Γ₁ ≡ Γ₂) (t₁ : Tm Γ₁ (σ ⇒ τ)) (t₂ : Tm Γ₁ σ) →
-  p /Tm/ (t₁ · t₂) ≡ (p /Tm/ t₁) · (p /Tm/ t₂)
-/Tm/∘· refl _ _ = refl
-
-
--- /Tm/∘⇗
-
-/Tm/∘vz⇗ : ∀ {σ Γ₁ Γ₂ τ} (p : Γ₁ ≡ Γ₂) (t : Tm Γ₁ τ) →
-  cong (flip _,_ σ) p /Tm/ (vz ⇗ t) ≡ vz ⇗ (p /Tm/ t)
-/Tm/∘vz⇗ refl p = refl
-
-
--- vz∘/Var/
-
-vz-/Var/ : ∀ {Γ₁ Γ₂ τ} (p : Γ₁ ≡ Γ₂) →
-  (vz {Γ₂}) ≡ cong (flip _,_ τ) p /Var/ vz {Γ₁}
-
-vz-/Var/ refl = refl
-
--- vs∘/Var/
-
-vs∘/Var/ : ∀ {Γ₁ Γ₂ σ τ} (p : Γ₁ ≡ Γ₂)  (v : Var Γ₁ τ) →
-  vs (p /Var/ v) ≡ cong (flip _,_ σ) p /Var/ vs v
-
-vs∘/Var/ refl v = refl
-
-
--- varDiff-⟳ˣ
-
-varDiff-⟳ˣ :  ∀ {Γ σ} (x : Var Γ σ) →
-  varDiff x x ≡ ⟳ˣ
-
-varDiff-⟳ˣ vz = refl
-varDiff-⟳ˣ (vs x) rewrite varDiff-⟳ˣ x = refl
-
--- varDiff-↗ˣ
-
-varDiff-↗ˣ : ∀ {Γ σ τ} (x : Var Γ σ) (y : Var (Γ - x) τ) →
-  varDiff x (x ⇗ˣ y) ≡ x ↗ˣ y
-
-varDiff-↗ˣ vz y = refl
-varDiff-↗ˣ (vs x) vz = refl
-varDiff-↗ˣ (vs x) (vs y) rewrite varDiff-↗ˣ x y = refl
-
-
--- substVar∘⟳ˣ
-
-substVar∘⟳ˣ : ∀ {Γ σ} (x : Var Γ σ) (u : Tm (Γ - x) σ) →
-  substVar x x u ≡ u
-
-substVar∘⟳ˣ x u rewrite varDiff-⟳ˣ x =
-  refl
-
--- substVar∘⇗ˣ
-
-substVar∘⇗ˣ : ∀ {Γ σ τ} (x : Var Γ σ) (u : Tm (Γ - x) σ) (v : Var (Γ - x) τ) →
-  substVar (x ⇗ˣ v) x u ≡ var v
-
-substVar∘⇗ˣ x u v rewrite varDiff-↗ˣ x v =
-  refl
+open import Lemmas
 
 
 -- ⇗ˣ∘⇗ˣ
@@ -141,8 +30,9 @@ substVar∘⇗ˣ x u v rewrite varDiff-↗ˣ x v =
   vs x ⇗ˣ (vs y ⇗ˣ vz)
     ≡⟨⟩
   vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ vz)
-    ≡⟨ cong (λ z → vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ z)) (vz-/Var/ (-∘- x y)) ⟩
-  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ (cong (flip _,_ σ) (-∘- x y) /Var/ vz))
+    ≡⟨ cong (λ z → vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ z))
+            (sym $ /Var/∘vz (-∘- x y)) ⟩
+  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ ((-∘- x y <,< σ) /Var/ vz))
     ≡⟨⟩
   (vs x ⇗ˣ vs y) ⇗ˣ ((vs x ⇘ˣ vs y) ⇗ˣ (-∘- (vs x) (vs y) /Var/ vz))
   ∎
@@ -156,8 +46,9 @@ substVar∘⇗ˣ x u v rewrite varDiff-↗ˣ x v =
   vs ((x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ v)))
     ≡⟨ refl ⟩
   vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ vs (-∘- x y /Var/ v))
-    ≡⟨ cong (λ z → vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ z)) (vs∘/Var/ (-∘- x y) v) ⟩
-  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ (cong (flip _,_ τ′) (-∘- x y) /Var/ vs v))
+    ≡⟨ cong (λ z → vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ z))
+            (sym $ /Var/∘vs (-∘- x y) v) ⟩
+  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ ((-∘- x y <,< τ′) /Var/ vs v))
     ≡⟨⟩
   (vs x ⇗ˣ vs y) ⇗ˣ ((vs x ⇘ˣ vs y) ⇗ˣ (-∘- (vs x) (vs y) /Var/ vs v))
   ∎
@@ -191,9 +82,9 @@ substVar∘⇗ˣ x u v rewrite varDiff-↗ˣ x v =
     ≡⟨ refl ⟩
   ƛ (vs x ⇗ (vs y ⇗ t))
     ≡⟨ cong ƛ (⇗∘⇗ (vs x) (vs y) t) ⟩
-  ƛ (vs (x ⇗ˣ y) ⇗ (vs (x ⇘ˣ y) ⇗ (cong (flip _,_ σ) (-∘- x y) /Tm/ t)))
+  ƛ (vs (x ⇗ˣ y) ⇗ (vs (x ⇘ˣ y) ⇗ ((-∘- x y <,< σ) /Tm/ t)))
     ≡⟨ refl ⟩
-  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ ƛ (cong (flip _,_ σ) (-∘- x y) /Tm/ t))
+  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ ƛ ((-∘- x y <,< σ) /Tm/ t))
     ≡⟨ cong (λ u → (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ u))
             (sym $ /Tm/∘ƛ (-∘- x y) t) ⟩
   (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ ƛ t))
@@ -243,12 +134,12 @@ substVar∘⇗ˣ x u v rewrite varDiff-↗ˣ x v =
     ≡⟨⟩
   (x ⇘ˣ y) ⇗ (-∘- x y /Tm/ ƛ (substTm t (vs y) (vz ⇗ u)))
     ≡⟨ cong (_⇗_ (x ⇘ˣ y)) (/Tm/∘ƛ (-∘- x y) (substTm t (vs y) (vz ⇗ u))) ⟩
-  (x ⇘ˣ y) ⇗ ƛ (cong (flip _,_ σ) (-∘- x y) /Tm/ substTm t (vs y) (vz ⇗ u))
+  (x ⇘ˣ y) ⇗ ƛ ((-∘- x y <,< σ) /Tm/ substTm t (vs y) (vz ⇗ u))
     ≡⟨⟩
   ƛ ((vs x ⇘ˣ vs y) ⇗ ((-∘- (vs x) (vs y)) /Tm/ substTm t (vs y) (vz ⇗ u)))
     ≡⟨ cong ƛ (⇗∘substTm (vs x) (vs y) (vz ⇗ u) t) ⟩
   ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y))
-    (vs (x ⇘ˣ y) ⇗ (cong (flip _,_ σ) (-∘- x y) /Tm/ (vz ⇗ u))))
+    (vs (x ⇘ˣ y) ⇗ ((-∘- x y <,< σ) /Tm/ (vz ⇗ u))))
     ≡⟨ cong (λ z → ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y)) (vs (x ⇘ˣ y) ⇗ z)))
             (/Tm/∘vz⇗ (-∘- x y) u) ⟩
   ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y)) (vs (x ⇘ˣ y) ⇗ (vz ⇗ (-∘- x y /Tm/ u))))
