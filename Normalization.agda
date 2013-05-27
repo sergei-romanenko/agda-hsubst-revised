@@ -44,10 +44,10 @@ mutual
 
 -- Appending an Nf to a Sp
 
-Sp+Nf : ∀ {Γ σ τ₁ τ₂} (ns : Sp Γ σ (τ₁ ⇒ τ₂)) (n : Nf Γ τ₁) → Sp Γ σ τ₂
+_,:_ : ∀ {Γ σ τ₁ τ₂} (ns : Sp Γ σ (τ₁ ⇒ τ₂)) (n : Nf Γ τ₁) → Sp Γ σ τ₂
 
-Sp+Nf ε n = n , ε
-Sp+Nf (n′ , ns) n = n′ , Sp+Nf ns n
+ε ,: n = n , ε
+(n′ , ns) ,: n = n′ , (ns ,: n)
 
 -- η-expansion
 --  t ↦ (λ v → (t v))
@@ -56,7 +56,7 @@ _·η_ : ∀ {τ Γ σ} (x : Var Γ σ) (ns : Sp Γ σ τ) → Nf Γ τ
 
 _·η_ {○} x ns = x ·ⁿ ns
 _·η_ {τ₁ ⇒ τ₂} x ns =
-  ƛⁿ (vs x ·η (Sp+Nf (vz ⇗ˢ ns) (vz ·η ε)))
+  ƛⁿ (vs x ·η ((vz ⇗ˢ ns) ,: (vz ·η ε)))
 
 
 -- β-reduction

@@ -15,45 +15,6 @@ open import BetaEta
 open import Lemmas
 
 
--- ⇗ˣ∘⇗ˣ
-
-⇗ˣ∘⇗ˣ : ∀ {Γ σ₁ σ₂ τ} (x : Var Γ σ₁) (y : Var (Γ - x) σ₂)
-          (v : Var ((Γ - x) - y) τ) →
-        x ⇗ˣ (y ⇗ˣ v) ≡
-          (x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ v))
-
-⇗ˣ∘⇗ˣ vz y v = refl
-
-⇗ˣ∘⇗ˣ (vs x) vz v = refl
-
-⇗ˣ∘⇗ˣ (vs x) (vs y) (vz {σ = σ}) = begin
-  vs x ⇗ˣ (vs y ⇗ˣ vz)
-    ≡⟨⟩
-  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ vz)
-    ≡⟨ cong (λ z → vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ z))
-            (sym $ /Var/∘vz (-∘- x y)) ⟩
-  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ ((-∘- x y <,< σ) /Var/ vz))
-    ≡⟨⟩
-  (vs x ⇗ˣ vs y) ⇗ˣ ((vs x ⇘ˣ vs y) ⇗ˣ (-∘- (vs x) (vs y) /Var/ vz))
-  ∎
-  where open ≡-Reasoning
-
-⇗ˣ∘⇗ˣ (vs {Γ} {σ₁} x) (vs {σ = σ₂} {τ = τ′} y) (vs {σ = τ} v) = begin
-  vs x ⇗ˣ (vs y ⇗ˣ vs v)
-    ≡⟨⟩
-  vs (x ⇗ˣ (y ⇗ˣ v))
-    ≡⟨ cong vs (⇗ˣ∘⇗ˣ x y v) ⟩
-  vs ((x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ v)))
-    ≡⟨ refl ⟩
-  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ vs (-∘- x y /Var/ v))
-    ≡⟨ cong (λ z → vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ z))
-            (sym $ /Var/∘vs (-∘- x y) v) ⟩
-  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ ((-∘- x y <,< τ′) /Var/ vs v))
-    ≡⟨⟩
-  (vs x ⇗ˣ vs y) ⇗ˣ ((vs x ⇘ˣ vs y) ⇗ˣ (-∘- (vs x) (vs y) /Var/ vs v))
-  ∎
-  where open ≡-Reasoning
-
 -- ⇗∘⇗
 
 ⇗∘⇗ : ∀ {Γ σ₁ σ₂ τ} (x : Var Γ σ₁) (y : Var (Γ - x) σ₂)
@@ -128,8 +89,7 @@ open import Lemmas
   ∎
   where open ≡-Reasoning
 
-⇗∘substTm x y u (ƛ {σ = σ}  t) =
-  begin
+⇗∘substTm x y u (ƛ {σ = σ}  t) = begin
   (x ⇘ˣ y) ⇗ (-∘- x y /Tm/ substTm (ƛ t) y u)
     ≡⟨⟩
   (x ⇘ˣ y) ⇗ (-∘- x y /Tm/ ƛ (substTm t (vs y) (vz ⇗ u)))
@@ -233,15 +193,15 @@ substTm-cong (t₁ · t₂) x h =
 ·⌈⌉-cong (n , ns) h =
   ·⌈⌉-cong ns (·-cong h βη-refl)
 
--- ·⌈⌉∘Sp+Nf
+-- ·⌈⌉∘,:
 
-·⌈⌉∘Sp+Nf : ∀ {Γ σ τ₁ τ₂} (t : Tm Γ σ) (ns : Sp Γ σ (τ₁ ⇒ τ₂)) (n : Nf Γ τ₁) →
-  t ·⌈ Sp+Nf ns n ⌉ ≈βη  (t ·⌈ ns ⌉) ·⌈ n , ε ⌉
+·⌈⌉∘,: : ∀ {Γ σ τ₁ τ₂} (t : Tm Γ σ) (ns : Sp Γ σ (τ₁ ⇒ τ₂)) (n : Nf Γ τ₁) →
+  t ·⌈ ns ,: n ⌉ ≈βη  (t ·⌈ ns ⌉) ·⌈ n , ε ⌉
 
-·⌈⌉∘Sp+Nf t ε n =
+·⌈⌉∘,: t ε n =
   βη-refl
-·⌈⌉∘Sp+Nf t (n′ , ns) n =
-  ·⌈⌉∘Sp+Nf (t · ⌈ n′ ⌉) ns n
+·⌈⌉∘,: t (n′ , ns) n =
+  ·⌈⌉∘,: (t · ⌈ n′ ⌉) ns n
 
 mutual
 
@@ -301,14 +261,13 @@ mutual
 
 ⌈⌉∘·η {○} x ns = βη-refl
 
-⌈⌉∘·η {τ₁ ⇒ τ₂} x ns =
-  begin
+⌈⌉∘·η {τ₁ ⇒ τ₂} x ns = begin
   ⌈ x ·η ns ⌉
     ≡⟨ refl ⟩
-  ƛ ⌈ vs x ·η Sp+Nf (vz ⇗ˢ ns) (vz ·η ε) ⌉
-    ≈⟨ ƛ-cong (⌈⌉∘·η (vs x) (Sp+Nf (vz ⇗ˢ ns) (vz ·η ε))) ⟩
-  ƛ (var (vs x) ·⌈ Sp+Nf (vz ⇗ˢ ns) (vz ·η ε) ⌉)
-    ≈⟨ ƛ-cong (·⌈⌉∘Sp+Nf (var (vs x)) (vz ⇗ˢ ns) (vz ·η ε)) ⟩
+  ƛ ⌈ vs x ·η ((vz ⇗ˢ ns) ,: (vz ·η ε)) ⌉
+    ≈⟨ ƛ-cong (⌈⌉∘·η (vs x) ((vz ⇗ˢ ns) ,: (vz ·η ε))) ⟩
+  ƛ (var (vs x) ·⌈ (vz ⇗ˢ ns) ,: (vz ·η ε) ⌉)
+    ≈⟨ ƛ-cong (·⌈⌉∘,: (var (vs x)) (vz ⇗ˢ ns) (vz ·η ε)) ⟩
   ƛ ((var (vs x) ·⌈ vz ⇗ˢ ns ⌉) · ⌈ vz ·η ε ⌉)
     ≈⟨ ƛ-cong (·-cong (·⌈⌉∘⇗ⁿ vz (var x) ns) (⌈⌉∘·η vz ε)) ⟩
   ƛ ((vz ⇗ (var x ·⌈ ns ⌉)) · var vz)

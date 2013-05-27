@@ -16,6 +16,13 @@ _<,<_ : {Γ₁ Γ₂ : Con} (p : Γ₁ ≡ Γ₂) (σ : Ty) →
   _≡_ {A = Con} (Γ₁ , σ) (Γ₂ , σ)
 refl <,< σ = refl
 
+-- sym∘<,<
+
+sym∘<,< : ∀ {Γ₁ Γ₂ : Con} (p : Γ₁ ≡ Γ₂) (σ : Ty) →
+ (P.sym p) <,< σ ≡ P.sym {_} {Con} (p <,< σ)
+sym∘<,< refl σ = refl
+
+
 -- _/Var/_
 -- `Γ₁≡Γ₂ /Var/ t` is a shortcut for `subst (flip Var σ) Γ₁≡Γ₂ t`
 
@@ -131,3 +138,77 @@ substVar∘⇗ˣ : ∀ {Γ σ τ} (x : Var Γ σ) (u : Tm (Γ - x) σ) (v : Var 
 substVar∘⇗ˣ x u v rewrite varDiff-↗ˣ x v =
   refl
 
+-- _/Nf/_
+
+_/Nf/_ : ∀ {σ Γ₁ Γ₂} → Γ₁ ≡ Γ₂ → Nf Γ₁ σ → Nf Γ₂ σ
+refl /Nf/ n = n
+
+
+-- _/Sp/_
+
+_/Sp/_ : ∀ {σ τ Γ₁ Γ₂} → Γ₁ ≡ Γ₂ → Sp Γ₁ σ τ → Sp Γ₂ σ τ
+refl /Sp/ ns = ns
+
+
+-- /Nf/∘ƛⁿ
+
+/Nf/∘ƛⁿ : ∀ {σ τ Γ₁ Γ₂} (p : Γ₁ ≡ Γ₂) (n : Nf (Γ₁ , σ) τ) →
+  p /Nf/ ƛⁿ n ≡ ƛⁿ ((p <,< σ) /Nf/ n)
+/Nf/∘ƛⁿ refl _ = refl
+
+-- /Nf/∘·ⁿ
+
+/Nf/∘·ⁿ : ∀ {σ Γ₁ Γ₂} (p : Γ₁ ≡ Γ₂) (x : Var Γ₁ σ) (ns : Sp Γ₁ σ ○) →
+  p /Nf/ (x ·ⁿ ns) ≡ (p /Var/ x) ·ⁿ (p /Sp/ ns)
+/Nf/∘·ⁿ refl _ _ = refl
+
+-- /Sp/∘ε
+
+/Sp/∘ε : ∀ {σ Γ₁ Γ₂} (p : Γ₁ ≡ Γ₂) → p /Sp/ (ε {σ = σ}) ≡ ε
+/Sp/∘ε refl = refl
+
+-- /Sp/∘,
+
+/Sp/∘, : ∀ {σ Γ₁ Γ₂ τ₁ τ₂} (p : Γ₁ ≡ Γ₂) (n : Nf Γ₁ σ) (ns : Sp Γ₁ τ₁ τ₂) →
+  p /Sp/ (n , ns) ≡ (p /Nf/ n) , (p /Sp/ ns)
+/Sp/∘, refl _ _ = refl
+
+
+-- ⇗ˣ∘⇗ˣ
+
+⇗ˣ∘⇗ˣ : ∀ {Γ σ₁ σ₂ τ} (x : Var Γ σ₁) (y : Var (Γ - x) σ₂)
+          (v : Var ((Γ - x) - y) τ) →
+        x ⇗ˣ (y ⇗ˣ v) ≡
+          (x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ v))
+
+⇗ˣ∘⇗ˣ vz y v = refl
+
+⇗ˣ∘⇗ˣ (vs x) vz v = refl
+
+⇗ˣ∘⇗ˣ (vs x) (vs y) (vz {σ = σ}) = begin
+  vs x ⇗ˣ (vs y ⇗ˣ vz)
+    ≡⟨⟩
+  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ vz)
+    ≡⟨ cong (λ z → vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ z))
+            (sym $ /Var/∘vz (-∘- x y)) ⟩
+  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ ((-∘- x y <,< σ) /Var/ vz))
+    ≡⟨⟩
+  (vs x ⇗ˣ vs y) ⇗ˣ ((vs x ⇘ˣ vs y) ⇗ˣ (-∘- (vs x) (vs y) /Var/ vz))
+  ∎
+  where open ≡-Reasoning
+
+⇗ˣ∘⇗ˣ (vs {Γ} {σ₁} x) (vs {σ = σ₂} {τ = τ′} y) (vs {σ = τ} v) = begin
+  vs x ⇗ˣ (vs y ⇗ˣ vs v)
+    ≡⟨⟩
+  vs (x ⇗ˣ (y ⇗ˣ v))
+    ≡⟨ cong vs (⇗ˣ∘⇗ˣ x y v) ⟩
+  vs ((x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ v)))
+    ≡⟨ refl ⟩
+  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ vs (-∘- x y /Var/ v))
+    ≡⟨ cong (λ z → vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ z))
+            (sym $ /Var/∘vs (-∘- x y) v) ⟩
+  vs (x ⇗ˣ y) ⇗ˣ (vs (x ⇘ˣ y) ⇗ˣ ((-∘- x y <,< τ′) /Var/ vs v))
+    ≡⟨⟩
+  (vs x ⇗ˣ vs y) ⇗ˣ ((vs x ⇘ˣ vs y) ⇗ˣ (-∘- (vs x) (vs y) /Var/ vs v))
+  ∎
+  where open ≡-Reasoning
