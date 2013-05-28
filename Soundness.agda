@@ -199,6 +199,20 @@ vs-inj : ∀ {τ Γ σ} {x y : Var Γ σ} →
   vs {τ = τ} x ≡ vs y → x ≡ y
 vs-inj refl = refl
 
+-- ⇗ˣ-inj
+-- ⇗ˣ is injective
+
+⇗ˣ-inj : ∀ {Γ σ τ} (i : Var Γ σ) (x y : Var (Γ - i) τ) →
+  i ⇗ˣ x ≡ i ⇗ˣ y → x ≡ y
+
+⇗ˣ-inj vz x y h = vs-inj h
+⇗ˣ-inj (vs i) vz vz h = refl
+⇗ˣ-inj (vs i) vz (vs y) ()
+⇗ˣ-inj (vs i) (vs x) vz ()
+⇗ˣ-inj (vs i) (vs x) (vs y) h =
+  cong vs (⇗ˣ-inj i x y (vs-inj h))
+
+
 mutual
 
   -- /Var/∘<,<∘↷-cong
@@ -306,39 +320,6 @@ postulate
 
 mutual
 
-  -- ↷/Var/·ⁿ/Sp/
-
-  ↷/Var/·ⁿ/Sp/ : ∀ {Γ σ τ} {i j : Var Γ σ}  (i↷j : i ↷ j)
-                 (x′ : Var (Γ - i) τ) (ns : Sp (Γ - i) τ ○) (x : Var (Γ - j) σ)
-                 (l : Var Γ τ) → l ≡ i ⇗ˣ x′ →
-                 i ⇗ˣ ((sym $ ↷-cong i↷j) /Var/ x) ≡ j →
-    (↷-cong i↷j /Var/ x′) ·ⁿ (↷-cong i↷j /Sp/ ns) ≡
-      (l ·ⁿ (i ⇗ˢ ns)) [ j ≔ (x ·η ε) ]
-
-  ↷/Var/·ⁿ/Sp/ {Γ} {σ} {τ} {i} {j} i↷j x′ ns x l l≡ h with varDiff j l
-
-  ↷/Var/·ⁿ/Sp/ {i = i} i↷j x′ ns x l l≡ h | ⟳ˣ = {!!}
-{-
-    begin
-    (↷-cong i↷j /Var/ x′) ·ⁿ (↷-cong i↷j /Sp/ ns)
-      ≡⟨ {! !} ⟩
-    (x ·η ε) ◇ ((i ⇗ˢ ns) < l ≔ x ·η ε >)
-    ∎
-    where open ≡-Reasoning
--}
-
-  -- ↷/Var/·ⁿ/Sp/
-
-  ↷/Var/·ⁿ/Sp/ {i = i} i↷j x′ ns x .(j ⇗ˣ v) l≡ h | j ↗ˣ v = {!!}
-{-
-  begin
-    (↷-cong i↷j /Var/ x′) ·ⁿ (↷-cong i↷j /Sp/ ns)
-      ≡⟨ {!!} ⟩
-    v ·ⁿ ((i ⇗ˢ ns) < j ≔ x ·η ε >)
-    ∎
-    where open ≡-Reasoning
--}
-
   -- ↷/Nf/
 
   ↷/Nf/ : ∀ {Γ σ τ} {i j : Var Γ σ} (i↷j : i ↷ j)
@@ -374,12 +355,34 @@ mutual
       vs j
       ∎
 
-  ↷/Nf/ {i = i} {j = j} i↷j (x′ ·ⁿ ns) x h = begin
+  ↷/Nf/ {i = i} {j = j} i↷j (x′ ·ⁿ ns) x h with i ⇗ˣ x′ | inspect (_⇗ˣ_ i) x′
+  ... | l | [ l≡ ] with varDiff j l
+
+  ↷/Nf/ {i = i} i↷j (x′ ·ⁿ ns) x h | l | [ l≡ ] | ⟳ˣ = begin
     ↷-cong i↷j /Nf/ (x′ ·ⁿ ns)
       ≡⟨ /Nf/∘·ⁿ (↷-cong i↷j) x′ ns ⟩
     (↷-cong i↷j /Var/ x′) ·ⁿ (↷-cong i↷j /Sp/ ns)
-      ≡⟨ ↷/Var/·ⁿ/Sp/ i↷j x′ ns x (i ⇗ˣ x′) refl h ⟩
-    (i ⇗ⁿ (x′ ·ⁿ ns)) [ j ≔ x ·η ε ]
+      ≡⟨ cong₂ _·ⁿ_ (sym $ helper) (↷/Sp/ i↷j ns x h) ⟩
+    x ·ⁿ ((i ⇗ˢ ns) < l ≔ x ·η ε >)
+      ≡⟨ sym $ ◇∘·η x ε ((i ⇗ˢ ns) < l ≔ x ·η ε >) ⟩
+    (x ·η ε) ◇ ((i ⇗ˢ ns) < l ≔ x ·η ε >)
+    ∎
+    where
+    open ≡-Reasoning
+    p1 : i ⇗ˣ x′ ≡ i ⇗ˣ (sym (↷-cong i↷j) /Var/ x)
+    p1 = trans l≡ (sym h)
+    p2 : x′ ≡ sym (↷-cong i↷j) /Var/ x
+    p2 =  ⇗ˣ-inj i x′ (sym (↷-cong i↷j) /Var/ x) p1
+    helper : x ≡ ↷-cong i↷j /Var/ x′
+    helper = /Var/∘sym x′ x (↷-cong i↷j) p2
+  
+
+  ↷/Nf/ {i = i} i↷j (x′ ·ⁿ ns) x h | .(j ⇗ˣ v) | [ l≡ ] | j ↗ˣ v = begin
+    ↷-cong i↷j /Nf/ (x′ ·ⁿ ns)
+      ≡⟨ /Nf/∘·ⁿ (↷-cong i↷j) x′ ns ⟩
+    (↷-cong i↷j /Var/ x′) ·ⁿ (↷-cong i↷j /Sp/ ns)
+      ≡⟨ cong₂ _·ⁿ_ (/Var/∘↷-cong i↷j l≡) (↷/Sp/ i↷j ns x h) ⟩
+    v ·ⁿ ((i ⇗ˢ ns) < j ≔ x ·η ε >)
     ∎
     where open ≡-Reasoning
 

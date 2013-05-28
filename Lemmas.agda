@@ -103,6 +103,12 @@ vs x ⇘ˣ vs y = vs (x ⇘ˣ y)
 
 /Var/∘vs refl v = refl
 
+-- /Var/∘sym
+
+/Var/∘sym : ∀ {σ Γ₁ Γ₂} (x : Var Γ₁ σ) (y : Var Γ₂ σ) (p : Γ₁ ≡ Γ₂) →
+  x ≡ sym p /Var/ y → y ≡ p /Var/ x
+
+/Var/∘sym .y y refl refl = refl
 
 -- varDiff-⟳ˣ
 
