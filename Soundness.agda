@@ -61,47 +61,47 @@ mutual
     x ⇗ˢ (y ⇗ˢ ns) ≡
     (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ (-∘- x y /Sp/ ns))
 
-  ⇗ˢ∘⇗ˢ x y ε = begin
-    x ⇗ˢ (y ⇗ˢ ε)
+  ⇗ˢ∘⇗ˢ x y [] = begin
+    x ⇗ˢ (y ⇗ˢ [])
       ≡⟨⟩
-    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ ε)
+    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ [])
       ≡⟨ cong (λ ns → (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ ns))
-              (sym $ /Sp/∘ε (-∘- x y)) ⟩
-    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ (-∘- x y /Sp/ ε))
+              (sym $ /Sp/∘[] (-∘- x y)) ⟩
+    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ (-∘- x y /Sp/ []))
     ∎
     where open ≡-Reasoning
 
-  ⇗ˢ∘⇗ˢ x y (n , ns) = begin
-    x ⇗ˢ (y ⇗ˢ (n , ns))
+  ⇗ˢ∘⇗ˢ x y (n ∷ ns) = begin
+    x ⇗ˢ (y ⇗ˢ (n ∷ ns))
       ≡⟨⟩
-    (x ⇗ⁿ (y ⇗ⁿ n)) , (x ⇗ˢ (y ⇗ˢ ns))
-      ≡⟨ cong₂ _,_ (⇗ⁿ∘⇗ⁿ x y n) (⇗ˢ∘⇗ˢ x y ns) ⟩
-    ((x ⇗ˣ y) ⇗ⁿ ((x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ n))) ,
-        ((x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ (-∘- x y /Sp/ ns)))
+    x ⇗ⁿ (y ⇗ⁿ n) ∷ x ⇗ˢ (y ⇗ˢ ns)
+      ≡⟨ cong₂ _∷_ (⇗ⁿ∘⇗ⁿ x y n) (⇗ˢ∘⇗ˢ x y ns) ⟩
+    (x ⇗ˣ y) ⇗ⁿ ((x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ n)) ∷
+        (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ (-∘- x y /Sp/ ns))
       ≡⟨⟩
-    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ ((-∘- x y /Nf/ n) , (-∘- x y /Sp/ ns)))
+    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ ((-∘- x y /Nf/ n) ∷ (-∘- x y /Sp/ ns)))
       ≡⟨ cong (λ ns₁ → (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ ns₁))
-              (sym $ /Sp/∘, (-∘- x y) n ns) ⟩
-    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ (-∘- x y /Sp/ (n , ns)))
+              (sym $ /Sp/∘∷ (-∘- x y) n ns) ⟩
+    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ (-∘- x y /Sp/ (n ∷ ns)))
     ∎
     where open ≡-Reasoning
 
 
 mutual
 
-  ⇗ˢ∘,: : ∀ {Γ σ₁ σ₂ τ₁ τ₂} (x : Var Γ σ₁) (ns : Sp (Γ - x) σ₂ (τ₁ ⇒ τ₂)) →
-    vs x ⇗ˢ ((vz ⇗ˢ ns) ,: (vz ·η ε)) ≡
-      (vz ⇗ˢ (x ⇗ˢ ns)) ,: (vz ·η ε)
+  ⇗ˢ∘∷ʳ : ∀ {Γ σ₁ σ₂ τ₁ τ₂} (x : Var Γ σ₁) (ns : Sp (Γ - x) σ₂ (τ₁ ⇒ τ₂)) →
+    vs x ⇗ˢ (vz ⇗ˢ ns ∷ʳ vz ·η []) ≡
+      vz ⇗ˢ (x ⇗ˢ ns) ∷ʳ vz ·η []
 
-  ⇗ˢ∘,: x ε = cong (λ n → n , ε) (⇗ⁿ∘·η (vs x) vz ε)
-  ⇗ˢ∘,: x (n , ns) = begin
-    vs x ⇗ˢ ((vz ⇗ˢ (n , ns)) ,: (vz ·η ε))
+  ⇗ˢ∘∷ʳ x [] = cong (λ n → n ∷ []) (⇗ⁿ∘·η (vs x) vz [])
+  ⇗ˢ∘∷ʳ x (n ∷ ns) = begin
+    vs x ⇗ˢ (vz ⇗ˢ (n ∷ ns) ∷ʳ vz ·η [])
       ≡⟨⟩
-    (vs x ⇗ⁿ (vz ⇗ⁿ n)) , (vs x ⇗ˢ ((vz ⇗ˢ ns) ,: (vz ·η ε)))
-      ≡⟨ cong₂ _,_ (sym $ ⇗ⁿ∘⇗ⁿ vz x n) (⇗ˢ∘,: x ns) ⟩
-    (vz ⇗ⁿ (x ⇗ⁿ n))    , ((vz ⇗ˢ (x ⇗ˢ ns)) ,: (vz ·η ε))
+    vs x ⇗ⁿ (vz ⇗ⁿ n) ∷ vs x ⇗ˢ (vz ⇗ˢ ns ∷ʳ vz ·η [])
+      ≡⟨ cong₂ _∷_ (sym $ ⇗ⁿ∘⇗ⁿ vz x n) (⇗ˢ∘∷ʳ x ns) ⟩
+    vz ⇗ⁿ (x ⇗ⁿ n) ∷ (vz ⇗ˢ (x ⇗ˢ ns) ∷ʳ vz ·η [])
       ≡⟨⟩
-    (vz ⇗ˢ (x ⇗ˢ (n , ns))) ,: (vz ·η ε)
+    vz ⇗ˢ (x ⇗ˢ (n ∷ ns)) ∷ʳ vz ·η []
     ∎
     where open ≡-Reasoning
 
@@ -114,12 +114,12 @@ mutual
   ⇗ⁿ∘·η {τ₁ ⇒ τ₂} x y ns = begin
     x ⇗ⁿ (y ·η ns)
       ≡⟨⟩
-    ƛⁿ (vs x ⇗ⁿ (vs y ·η ((vz ⇗ˢ ns) ,: (vz ·η ε))))
-      ≡⟨ cong ƛⁿ (⇗ⁿ∘·η (vs x) (vs y) ((vz ⇗ˢ ns) ,: (vz ·η ε))) ⟩
-    ƛⁿ (vs (x ⇗ˣ y) ·η (vs x ⇗ˢ ((vz ⇗ˢ ns) ,: (vz ·η ε))))
+    ƛⁿ (vs x ⇗ⁿ (vs y ·η ((vz ⇗ˢ ns) ∷ʳ (vz ·η []))))
+      ≡⟨ cong ƛⁿ (⇗ⁿ∘·η (vs x) (vs y) ((vz ⇗ˢ ns) ∷ʳ (vz ·η []))) ⟩
+    ƛⁿ (vs (x ⇗ˣ y) ·η (vs x ⇗ˢ ((vz ⇗ˢ ns) ∷ʳ (vz ·η []))))
       ≡⟨ cong (λ u → ƛⁿ (vs (x ⇗ˣ y) ·η u))
-              (⇗ˢ∘,: x ns) ⟩
-    ƛⁿ (vs (x ⇗ˣ y) ·η ((vz ⇗ˢ (x ⇗ˢ ns)) ,: (vz ·η ε)))
+              (⇗ˢ∘∷ʳ x ns) ⟩
+    ƛⁿ (vs (x ⇗ˣ y) ·η (vz ⇗ˢ (x ⇗ˢ ns) ∷ʳ vz ·η []))
       ≡⟨⟩
     (x ⇗ˣ y) ·η (x ⇗ˢ ns)
     ∎
@@ -142,7 +142,7 @@ nf∘⇗ : ∀ {Γ σ τ} (x : Var Γ σ) (t : Tm (Γ - x) τ) →
   nf (x ⇗ t) ≡ x ⇗ⁿ (nf t)
 
 nf∘⇗ x (var x′) =
-  sym $ ⇗ⁿ∘·η x x′ ε
+  sym $ ⇗ⁿ∘·η x x′ []
 nf∘⇗ x (ƛ t) =
   cong ƛⁿ (nf∘⇗ (vs x) t)
 nf∘⇗ x (t₁ · t₂) = begin
@@ -256,48 +256,50 @@ postulate
 -}
 
 
--- _+Sp+_
+-- _++ˢ_
 
-_+Sp+_ : ∀ {Γ σ₁ σ₂ σ₃} (ns₁ : Sp Γ σ₁ σ₂) (ns₂ : Sp Γ σ₂ σ₃) → Sp Γ σ₁ σ₃
+infixr 5 _++ˢ_
 
-ε +Sp+ ns₂ = ns₂
-(n , ns₁) +Sp+ ns₂ = n , (ns₁ +Sp+ ns₂)
+_++ˢ_ : ∀ {Γ σ₁ σ₂ σ₃} (ns₁ : Sp Γ σ₁ σ₂) (ns₂ : Sp Γ σ₂ σ₃) → Sp Γ σ₁ σ₃
 
--- +Sp+ε
+[] ++ˢ ns₂ = ns₂
+(n ∷ ns₁) ++ˢ ns₂ = n ∷ (ns₁ ++ˢ ns₂)
 
-+Sp+ε : ∀ {Γ σ τ} (ns : Sp Γ σ τ) → ns +Sp+ ε ≡ ns
+-- ++ˢε
 
-+Sp+ε ε = refl
-+Sp+ε (n , ns) = cong (λ u → n , u) (+Sp+ε ns)
+++ˢε : ∀ {Γ σ τ} (ns : Sp Γ σ τ) → ns ++ˢ [] ≡ ns
 
--- +Sp+∘,
+++ˢε [] = refl
+++ˢε (n ∷ ns) = cong (λ u → n ∷ u) (++ˢε ns)
 
-+Sp+∘, : ∀ {Γ σ₁ σ₂ σ₃ τ}
+-- ++ˢ∘∷
+
+++ˢ∘∷ : ∀ {Γ σ₁ σ₂ σ₃ τ}
            (ns₁ : Sp Γ σ₁ (τ ⇒ σ₂)) (n : Nf Γ τ) (ns₂ : Sp Γ σ₂ σ₃) →
-  ns₁ +Sp+ (n , ns₂) ≡ (ns₁ ,: n) +Sp+ ns₂
+  ns₁ ++ˢ (n ∷ ns₂) ≡ (ns₁ ∷ʳ n) ++ˢ ns₂
 
-+Sp+∘, ε n ns₂ = refl
-+Sp+∘, (n′ , ns₁) n ns₂ = cong (λ u → n′ , u) (+Sp+∘, ns₁ n ns₂)
+++ˢ∘∷ [] n ns₂ = refl
+++ˢ∘∷ (n′ ∷ ns₁) n ns₂ = cong (λ u → n′ ∷ u) (++ˢ∘∷ ns₁ n ns₂)
 
--- ◇∘,:
+-- ◇∘∷ʳ
 
-◇∘,: : ∀ {Γ τ₁ τ₂ σ} (ns : Sp Γ τ₁ (τ₂ ⇒ σ)) (n : Nf Γ τ₂)
+◇∘∷ʳ : ∀ {Γ τ₁ τ₂ σ} (ns : Sp Γ τ₁ (τ₂ ⇒ σ)) (n : Nf Γ τ₂)
          (u : Nf Γ τ₁) →
-  u ◇ (ns ,: n) ≡ (u ◇ ns) ·β  n
+  u ◇ (ns ∷ʳ n) ≡ (u ◇ ns) ·β  n
 
-◇∘,: ε n u = refl
-◇∘,: (n′ , ns) n u =
-  ◇∘,: ns n (u ·β n′)
+◇∘∷ʳ [] n u = refl
+◇∘∷ʳ (n′ ∷ ns) n u =
+  ◇∘∷ʳ ns n (u ·β n′)
 
--- <≔>∘,:
+-- <≔>∘∷ʳ
 
-<≔>∘,: : ∀ {Γ τ₁ τ₂ τ₃ σ} (ns : Sp Γ τ₁ (τ₂ ⇒ τ₃)) (n : Nf Γ τ₂)
+<≔>∘∷ʳ : ∀ {Γ τ₁ τ₂ τ₃ σ} (ns : Sp Γ τ₁ (τ₂ ⇒ τ₃)) (n : Nf Γ τ₂)
            (x : Var Γ σ) (u : Nf (Γ - x) σ) →
-  (ns ,: n) < x ≔ u > ≡ (ns < x ≔ u >) ,: (n [ x ≔ u ])
+  (ns ∷ʳ n) < x ≔ u > ≡ (ns < x ≔ u >) ∷ʳ (n [ x ≔ u ])
 
-<≔>∘,: ε n x u = refl
-<≔>∘,: (n′ , ns) n x u =
-  cong (_,_ (n′ [ x ≔ u ])) (<≔>∘,: ns n x u)
+<≔>∘∷ʳ [] n x u = refl
+<≔>∘∷ʳ (n′ ∷ ns) n x u =
+  cong (_∷_ (n′ [ x ≔ u ])) (<≔>∘∷ʳ ns n x u)
 
 
 postulate
@@ -306,10 +308,10 @@ postulate
     (x : Var Γ σ) (ns : Sp Γ τ₁ τ₂) (u : Nf (Γ - x) σ) (y : Var (Γ - x) τ₁) →
     ((x ⇗ˣ y) ·η ns) [ x ≔ u ] ≡ y ·η (ns < x ≔ u >)
 
-  <≔>∘,:∘⇗ˢ : ∀ {Γ τ₁ τ₂ σ τ₃}
+  <≔>∘∷ʳ∘⇗ˢ : ∀ {Γ τ₁ τ₂ σ τ₃}
     (x : Var Γ σ) (ns : Sp Γ τ₁ (τ₂ ⇒ τ₃)) (u : Nf (Γ - x) σ) →
-    ((vz ⇗ˢ ns) ,: (vz ·η ε)) < vs x ≔ (vz ⇗ⁿ u) > ≡
-      (vz ⇗ˢ (ns < x ≔ u >)) ,: (vz ·η ε)
+    (vz ⇗ˢ ns ∷ʳ vz ·η []) < vs x ≔ (vz ⇗ⁿ u) > ≡
+      vz ⇗ˢ (ns < x ≔ u >) ∷ʳ vz ·η []
 
 postulate
 
@@ -325,7 +327,7 @@ mutual
   ↷/Nf/ : ∀ {Γ σ τ} {i j : Var Γ σ} (i↷j : i ↷ j)
               (n : Nf (Γ - i) τ) (x : Var (Γ - j) σ) →
               i ⇗ˣ ((sym $ ↷-cong i↷j) /Var/ x) ≡ j →
-    (↷-cong i↷j) /Nf/ n ≡ (i ⇗ⁿ n) [ j ≔ (x ·η ε) ]
+    (↷-cong i↷j) /Nf/ n ≡ (i ⇗ⁿ n) [ j ≔ x ·η [] ]
 
   ↷/Nf/ {i = i} {j = j} i↷j (ƛⁿ {σ = σ} n) x h = begin
     ↷-cong i↷j /Nf/ ƛⁿ n
@@ -334,11 +336,11 @@ mutual
       ≡⟨⟩
     ƛⁿ ((↷-cong (↷-s i↷j)) /Nf/ n)
       ≡⟨ cong ƛⁿ (↷/Nf/ (↷-s i↷j) n (vs x) helper) ⟩
-    ƛⁿ ((vs i ⇗ⁿ n) [ vs j ≔ vs x ·η ε ])
-      ≡⟨ cong (λ u → ƛⁿ ((vs i ⇗ⁿ n) [ vs j ≔ u ])) (sym $ ⇗ⁿ∘·η vz x ε) ⟩
-    ƛⁿ ((vs i ⇗ⁿ n) [ vs j ≔ vz ⇗ⁿ (x ·η ε) ])
+    ƛⁿ ((vs i ⇗ⁿ n) [ vs j ≔ vs x ·η [] ])
+      ≡⟨ cong (λ u → ƛⁿ ((vs i ⇗ⁿ n) [ vs j ≔ u ])) (sym $ ⇗ⁿ∘·η vz x []) ⟩
+    ƛⁿ ((vs i ⇗ⁿ n) [ vs j ≔ vz ⇗ⁿ (x ·η []) ])
       ≡⟨⟩
-    (i ⇗ⁿ ƛⁿ n) [ j ≔ x ·η ε ]
+    (i ⇗ⁿ ƛⁿ n) [ j ≔ x ·η [] ]
     ∎
     where
     open ≡-Reasoning
@@ -363,9 +365,9 @@ mutual
       ≡⟨ /Nf/∘·ⁿ (↷-cong i↷j) x′ ns ⟩
     (↷-cong i↷j /Var/ x′) ·ⁿ (↷-cong i↷j /Sp/ ns)
       ≡⟨ cong₂ _·ⁿ_ (sym $ helper) (↷/Sp/ i↷j ns x h) ⟩
-    x ·ⁿ ((i ⇗ˢ ns) < l ≔ x ·η ε >)
-      ≡⟨ sym $ ◇∘·η x ε ((i ⇗ˢ ns) < l ≔ x ·η ε >) ⟩
-    (x ·η ε) ◇ ((i ⇗ˢ ns) < l ≔ x ·η ε >)
+    x ·ⁿ ((i ⇗ˢ ns) < l ≔ x ·η [] >)
+      ≡⟨ sym $ ◇∘·η x [] ((i ⇗ˢ ns) < l ≔ x ·η [] >) ⟩
+    (x ·η []) ◇ ((i ⇗ˢ ns) < l ≔ x ·η [] >)
     ∎
     where
     open ≡-Reasoning
@@ -382,7 +384,7 @@ mutual
       ≡⟨ /Nf/∘·ⁿ (↷-cong i↷j) x′ ns ⟩
     (↷-cong i↷j /Var/ x′) ·ⁿ (↷-cong i↷j /Sp/ ns)
       ≡⟨ cong₂ _·ⁿ_ (/Var/∘↷-cong i↷j l≡) (↷/Sp/ i↷j ns x h) ⟩
-    v ·ⁿ ((i ⇗ˢ ns) < j ≔ x ·η ε >)
+    v ·ⁿ ((i ⇗ˢ ns) < j ≔ x ·η [] >)
     ∎
     where open ≡-Reasoning
 
@@ -391,19 +393,19 @@ mutual
   ↷/Sp/ : ∀ {Γ σ τ ρ} {i j : Var Γ σ} (i↷j : i ↷ j)
             (ns : Sp (Γ - i) ρ τ) (x : Var (Γ - j) σ) →
             i ⇗ˣ ((sym $ ↷-cong i↷j) /Var/ x) ≡ j →
-    ↷-cong i↷j /Sp/ ns ≡ (i ⇗ˢ ns) < j ≔ (x ·η ε) >
+    ↷-cong i↷j /Sp/ ns ≡ (i ⇗ˢ ns) < j ≔ (x ·η []) >
 
-  ↷/Sp/ i↷j ε x h =
-    /Sp/∘ε (↷-cong i↷j)
+  ↷/Sp/ i↷j [] x h =
+    /Sp/∘[] (↷-cong i↷j)
 
-  ↷/Sp/ {i = i} {j = j} i↷j (n , ns) x h = begin
-    ↷-cong i↷j /Sp/ (n , ns)
-      ≡⟨ /Sp/∘, (↷-cong i↷j) n ns ⟩
-    (↷-cong i↷j /Nf/ n) , (↷-cong i↷j /Sp/ ns)
-      ≡⟨ cong₂ _,_ (↷/Nf/ i↷j n x h) (↷/Sp/ i↷j ns x h) ⟩
-    ((i ⇗ⁿ n) [ j ≔ x ·η ε ]) , ((i ⇗ˢ ns) < j ≔ x ·η ε >)
+  ↷/Sp/ {i = i} {j = j} i↷j (n ∷ ns) x h = begin
+    ↷-cong i↷j /Sp/ (n ∷ ns)
+      ≡⟨ /Sp/∘∷ (↷-cong i↷j) n ns ⟩
+    (↷-cong i↷j /Nf/ n) ∷ (↷-cong i↷j /Sp/ ns)
+      ≡⟨ cong₂ _∷_ (↷/Nf/ i↷j n x h) (↷/Sp/ i↷j ns x h) ⟩
+    (i ⇗ⁿ n) [ j ≔ x ·η [] ] ∷ (i ⇗ˢ ns) < j ≔ x ·η [] >
       ≡⟨⟩
-    (i ⇗ˢ (n , ns)) < j ≔ x ·η ε >
+    (i ⇗ˢ (n ∷ ns)) < j ≔ x ·η [] >
     ∎
     where open ≡-Reasoning
 
@@ -411,35 +413,34 @@ mutual
   -- ◇∘·η
 
   ◇∘·η : ∀ {Γ σ τ} (x : Var Γ σ) (ns₁ : Sp Γ σ τ) (ns₂ : Sp Γ τ ○) →
-      (x ·η ns₁) ◇ ns₂ ≡ x ·ⁿ (ns₁ +Sp+ ns₂)
+      (x ·η ns₁) ◇ ns₂ ≡ x ·ⁿ (ns₁ ++ˢ ns₂)
 
-  ◇∘·η x ns₁ ε = begin
-    (x ·η ns₁) ◇ ε
+  ◇∘·η x ns₁ [] = begin
+    (x ·η ns₁) ◇ []
       ≡⟨⟩
     x ·ⁿ ns₁
-      ≡⟨ cong (_·ⁿ_ x) (sym $ +Sp+ε ns₁) ⟩
-    x ·ⁿ (ns₁ +Sp+ ε)
+      ≡⟨ cong (_·ⁿ_ x) (sym $ ++ˢε ns₁) ⟩
+    x ·ⁿ (ns₁ ++ˢ [])
     ∎
     where open ≡-Reasoning
 
-  ◇∘·η x ns₁ (n , ns₂) = begin
-    (x ·η ns₁) ◇ (n , ns₂)
+  ◇∘·η x ns₁ (n ∷ ns₂) = begin
+    (x ·η ns₁) ◇ (n ∷ ns₂)
       ≡⟨⟩
-    ((vs x ·η ((vz ⇗ˢ ns₁) ,: (vz ·η ε))) [ vz ≔ n ]) ◇ ns₂
+    ((vs x ·η (vz ⇗ˢ ns₁ ∷ʳ vz ·η [])) [ vz ≔ n ]) ◇ ns₂
       ≡⟨ cong (λ ns → ns ◇ ns₂)
-              ([≔]∘·η∘⇗ˣ vz ((vz ⇗ˢ ns₁) ,: (vz ·η ε)) n x) ⟩
-    (x ·η (((vz ⇗ˢ ns₁) ,: (vz ·η ε)) < vz ≔ n >)) ◇ ns₂
+              ([≔]∘·η∘⇗ˣ vz (vz ⇗ˢ ns₁ ∷ʳ vz ·η []) n x) ⟩
+    (x ·η ((vz ⇗ˢ ns₁ ∷ʳ vz ·η []) < vz ≔ n >)) ◇ ns₂
       ≡⟨ cong (λ ns → (x ·η ns) ◇ ns₂)
-              (<≔>∘,: (vz ⇗ˢ ns₁) (vz ·η ε) vz n) ⟩
-    (x ·η (((vz ⇗ˢ ns₁) < vz ≔ n >) ,: ((vz ·η ε) [ vz ≔ n ]))) ◇ ns₂
-      ≡⟨ cong₂ (λ us u → (x ·η (us ,: u)) ◇ ns₂)
-               (⇗ˢ∘<≔>-id vz ns₁ n)
-               ([≔]∘·η vz ε n) ⟩
-    (x ·η (ns₁ ,: n)) ◇ ns₂
-      ≡⟨ ◇∘·η x (ns₁ ,: n) ns₂ ⟩
-    x ·ⁿ ((ns₁ ,: n) +Sp+ ns₂)
-      ≡⟨ cong (_·ⁿ_ x) (sym $ +Sp+∘, ns₁ n ns₂) ⟩
-    x ·ⁿ (ns₁ +Sp+ (n , ns₂))
+              (<≔>∘∷ʳ (vz ⇗ˢ ns₁) (vz ·η []) vz n) ⟩
+    (x ·η (vz ⇗ˢ ns₁ < vz ≔ n > ∷ʳ (vz ·η []) [ vz ≔ n ])) ◇ ns₂
+      ≡⟨ cong₂ (λ us u → (x ·η (us ∷ʳ u)) ◇ ns₂)
+               (⇗ˢ∘<≔>-id vz ns₁ n) ([≔]∘·η vz [] n) ⟩
+    (x ·η (ns₁ ∷ʳ n)) ◇ ns₂
+      ≡⟨ ◇∘·η x (ns₁ ∷ʳ n) ns₂ ⟩
+    x ·ⁿ ((ns₁ ∷ʳ n) ++ˢ ns₂)
+      ≡⟨ cong (_·ⁿ_ x) (sym $ ++ˢ∘∷ ns₁ n ns₂) ⟩
+    x ·ⁿ (ns₁ ++ˢ (n ∷ ns₂))
     ∎
     where open ≡-Reasoning
 
@@ -453,16 +454,16 @@ mutual
   [≔]∘·η {τ₁ ⇒ τ₂} x ns u = begin
     (x ·η ns) [ x ≔ u ]
       ≡⟨⟩
-    ƛⁿ ((vs x ·η ((vz ⇗ˢ ns) ,: (vz ·η ε))) [ vs x ≔ vz ⇗ⁿ u ])
-      ≡⟨ cong ƛⁿ ([≔]∘·η (vs x) ((vz ⇗ˢ ns) ,: (vz ·η ε)) (vz ⇗ⁿ u)) ⟩
-    ƛⁿ ((vz ⇗ⁿ u) ◇ (((vz ⇗ˢ ns) ,: (vz ·η ε)) < vs x ≔ vz ⇗ⁿ u >))
+    ƛⁿ ((vs x ·η (vz ⇗ˢ ns ∷ʳ vz ·η [])) [ vs x ≔ vz ⇗ⁿ u ])
+      ≡⟨ cong ƛⁿ ([≔]∘·η (vs x) ((vz ⇗ˢ ns) ∷ʳ (vz ·η [])) (vz ⇗ⁿ u)) ⟩
+    ƛⁿ (vz ⇗ⁿ u ◇ ((vz ⇗ˢ ns ∷ʳ vz ·η []) < vs x ≔ vz ⇗ⁿ u >))
       ≡⟨ cong (λ us → ƛⁿ ((vz ⇗ⁿ u) ◇ us))
-              (<≔>∘,:∘⇗ˢ x ns u) ⟩ -- <≔>∘,:∘⇗ˢ
-    ƛⁿ ((vz ⇗ⁿ u) ◇ ((vz ⇗ˢ (ns < x ≔ u >)) ,: (vz ·η ε)))
-      ≡⟨ cong ƛⁿ (◇∘,: (vz ⇗ˢ (ns < x ≔ u >)) (vz ·η ε) (vz ⇗ⁿ u)) ⟩
-    ƛⁿ (((vz ⇗ⁿ u) ◇ (vz ⇗ˢ (ns < x ≔ u >))) ·β (vz ·η ε))
-      ≡⟨ cong (λ n → ƛⁿ (n ·β (vz ·η ε))) (sym $ ⇗ⁿ∘◇ vz u (ns < x ≔ u >)) ⟩
-    ƛⁿ ((vz ⇗ⁿ (u ◇ (ns < x ≔ u >))) ·β (vz ·η ε))
+              (<≔>∘∷ʳ∘⇗ˢ x ns u) ⟩
+    ƛⁿ (vz ⇗ⁿ u ◇ (vz ⇗ˢ (ns < x ≔ u >) ∷ʳ vz ·η []))
+      ≡⟨ cong ƛⁿ (◇∘∷ʳ (vz ⇗ˢ (ns < x ≔ u >)) (vz ·η []) (vz ⇗ⁿ u)) ⟩
+    ƛⁿ ((vz ⇗ⁿ u ◇ vz ⇗ˢ (ns < x ≔ u >)) ·β (vz ·η []))
+      ≡⟨ cong (λ n → ƛⁿ (n ·β (vz ·η []))) (sym $ ⇗ⁿ∘◇ vz u (ns < x ≔ u >)) ⟩
+    ƛⁿ (vz ⇗ⁿ (u ◇ (ns < x ≔ u >)) ·β (vz ·η []))
       ≡⟨ ƛⁿ∘·β (u ◇ (ns < x ≔ u >)) ⟩
     u ◇ (ns < x ≔ u >)
     ∎
@@ -472,12 +473,12 @@ mutual
   -- ƛⁿ∘·β
 
   ƛⁿ∘·β : ∀ {Γ σ τ} (n : Nf Γ (σ ⇒ τ))  →
-    ƛⁿ ((vz ⇗ⁿ n) ·β (vz ·η ε)) ≡ n
+    ƛⁿ ((vz ⇗ⁿ n) ·β (vz ·η [])) ≡ n
 
   ƛⁿ∘·β {Γ} {σ} {τ} (ƛⁿ n) = begin
-    ƛⁿ ((vz ⇗ⁿ ƛⁿ n) ·β (vz ·η ε))
+    ƛⁿ ((vz ⇗ⁿ ƛⁿ n) ·β (vz ·η []))
       ≡⟨⟩
-    ƛⁿ ((vs vz ⇗ⁿ n) [ vz ≔ vz ·η ε ])
+    ƛⁿ (vs vz ⇗ⁿ n [ vz ≔ vz ·η [] ])
       ≡⟨ cong ƛⁿ (sym $ ↷/Nf/ ↷-z n vz (vz ≡ vz ∋ refl)) ⟩
     ƛⁿ n
     ∎
@@ -548,9 +549,9 @@ mutual
 ≈βη⇒≡nf (≈-η {σ} {τ} {t}) = begin
   nf (ƛ ((vz ⇗ t) · var vz))
     ≡⟨⟩
-  ƛⁿ (nf (vz ⇗ t) ·β (vz ·η ε))
-    ≡⟨ cong (λ n → ƛⁿ (n ·β (vz ·η ε))) (nf∘⇗ vz t) ⟩
-  ƛⁿ ((vz ⇗ⁿ nf t) ·β (vz ·η ε))
+  ƛⁿ (nf (vz ⇗ t) ·β (vz ·η []))
+    ≡⟨ cong (λ n → ƛⁿ (n ·β (vz ·η []))) (nf∘⇗ vz t) ⟩
+  ƛⁿ ((vz ⇗ⁿ nf t) ·β (vz ·η []))
     ≡⟨ ƛⁿ∘·β (nf t) ⟩
   nf t
   ∎

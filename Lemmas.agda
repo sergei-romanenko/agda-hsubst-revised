@@ -38,6 +38,8 @@ refl /Tm/ t = t
 
 -- _⇘ˣ_
 
+infix 7 _⇘ˣ_
+
 _⇘ˣ_ : ∀ {Γ σ τ} (x : Var Γ σ) (y : Var (Γ - x) τ) → Var (Γ - (x ⇗ˣ y)) σ
 
 vz   ⇘ˣ y    = vz
@@ -168,16 +170,16 @@ refl /Sp/ ns = ns
   p /Nf/ (x ·ⁿ ns) ≡ (p /Var/ x) ·ⁿ (p /Sp/ ns)
 /Nf/∘·ⁿ refl _ _ = refl
 
--- /Sp/∘ε
+-- /Sp/∘[]
 
-/Sp/∘ε : ∀ {σ Γ₁ Γ₂} (p : Γ₁ ≡ Γ₂) → p /Sp/ (ε {σ = σ}) ≡ ε
-/Sp/∘ε refl = refl
+/Sp/∘[] : ∀ {σ Γ₁ Γ₂} (p : Γ₁ ≡ Γ₂) → p /Sp/ ([] {σ = σ}) ≡ []
+/Sp/∘[] refl = refl
 
--- /Sp/∘,
+-- /Sp/∘∷
 
-/Sp/∘, : ∀ {σ Γ₁ Γ₂ τ₁ τ₂} (p : Γ₁ ≡ Γ₂) (n : Nf Γ₁ σ) (ns : Sp Γ₁ τ₁ τ₂) →
-  p /Sp/ (n , ns) ≡ (p /Nf/ n) , (p /Sp/ ns)
-/Sp/∘, refl _ _ = refl
+/Sp/∘∷ : ∀ {σ Γ₁ Γ₂ τ₁ τ₂} (p : Γ₁ ≡ Γ₂) (n : Nf Γ₁ σ) (ns : Sp Γ₁ τ₁ τ₂) →
+  p /Sp/ (n ∷ ns) ≡ (p /Nf/ n) ∷ (p /Sp/ ns)
+/Sp/∘∷ refl _ _ = refl
 
 
 -- ⇗ˣ∘⇗ˣ

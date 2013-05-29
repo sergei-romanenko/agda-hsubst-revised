@@ -24,13 +24,13 @@ open import Lemmas
 
 ⇗∘⇗ x y (var {σ = σ} x₁) = begin
   x ⇗ (y ⇗ var x₁)
-    ≡⟨ refl ⟩
+    ≡⟨⟩
   var (x ⇗ˣ (y ⇗ˣ x₁))
     ≡⟨ cong var (⇗ˣ∘⇗ˣ x y x₁) ⟩
   var ((x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ x₁)))
-    ≡⟨ refl ⟩
+    ≡⟨⟩
   (x ⇗ˣ y) ⇗ var ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ x₁))
-    ≡⟨ refl ⟩
+    ≡⟨⟩
   (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ var (-∘- x y /Var/ x₁))
     ≡⟨ cong (λ t → (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ t))
             (sym $ /Var/∘var (-∘- x y) x₁) ⟩
@@ -40,11 +40,11 @@ open import Lemmas
 
 ⇗∘⇗ {Γ} {σ₁} {σ₂} {σ ⇒ .τ} x y (ƛ {τ = τ} t) = begin
   x ⇗ (y ⇗ ƛ t)
-    ≡⟨ refl ⟩
+    ≡⟨⟩
   ƛ (vs x ⇗ (vs y ⇗ t))
     ≡⟨ cong ƛ (⇗∘⇗ (vs x) (vs y) t) ⟩
   ƛ (vs (x ⇗ˣ y) ⇗ (vs (x ⇘ˣ y) ⇗ ((-∘- x y <,< σ) /Tm/ t)))
-    ≡⟨ refl ⟩
+    ≡⟨⟩
   (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ ƛ ((-∘- x y <,< σ) /Tm/ t))
     ≡⟨ cong (λ u → (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ u))
             (sym $ /Tm/∘ƛ (-∘- x y) t) ⟩
@@ -54,8 +54,8 @@ open import Lemmas
 
 ⇗∘⇗ {Γ} {σ₁} {σ₂} {τ} x y (_·_ {σ = σ′} t₁ t₂) = begin
   x ⇗ (y ⇗ (t₁ · t₂))
-    ≡⟨ refl ⟩
-  (x ⇗ (y ⇗ t₁)) · (x ⇗ (y ⇗ t₂))
+    ≡⟨⟩
+  x ⇗ (y ⇗ t₁) · x ⇗ (y ⇗ t₂)
     ≡⟨ cong₂ _·_ (⇗∘⇗ x y t₁) (⇗∘⇗ x y t₂) ⟩
   (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ ((-∘- x y /Tm/ t₁) · (-∘- x y /Tm/ t₂)))
     ≡⟨ cong (λ t → (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ t))
@@ -148,7 +148,7 @@ open import Lemmas
 ⇗-cong x (≈-β {t = t} {u = u}) =
  begin
   x ⇗ (ƛ t · u)
-    ≡⟨ refl ⟩
+    ≡⟨⟩
   ƛ (vs x ⇗ t) · (x ⇗ u)
     ≈⟨ ≈-β ⟩
   substTm (vs x ⇗ t) vz (x ⇗ u)
@@ -159,7 +159,7 @@ open import Lemmas
 
 ⇗-cong x (≈-η {t = t}) = begin
   x ⇗ ƛ ((vz ⇗ t) · var vz)
-    ≡⟨ refl ⟩
+    ≡⟨⟩
   ƛ ((vs x ⇗ (vz ⇗ t)) · var vz)
     ≡⟨ cong (λ e → ƛ (e · var vz)) (sym $ ⇗∘⇗ vz x t) ⟩
   ƛ ((vz ⇗ (x ⇗ t)) · var vz)
@@ -188,20 +188,20 @@ substTm-cong (t₁ · t₂) x h =
 ·⌈⌉-cong : ∀ {Γ σ τ} {t₁ t₂ : Tm Γ σ} (ns : Sp Γ σ τ) →
              t₁ ≈βη t₂ → t₁ ·⌈ ns ⌉ ≈βη t₂ ·⌈ ns ⌉
 
-·⌈⌉-cong ε h =
+·⌈⌉-cong [] h =
   βη-sym (βη-sym h)
-·⌈⌉-cong (n , ns) h =
+·⌈⌉-cong (n ∷ ns) h =
   ·⌈⌉-cong ns (·-cong h βη-refl)
 
--- ·⌈⌉∘,:
+-- ·⌈⌉∘∷ʳ
 
-·⌈⌉∘,: : ∀ {Γ σ τ₁ τ₂} (t : Tm Γ σ) (ns : Sp Γ σ (τ₁ ⇒ τ₂)) (n : Nf Γ τ₁) →
-  t ·⌈ ns ,: n ⌉ ≈βη  (t ·⌈ ns ⌉) ·⌈ n , ε ⌉
+·⌈⌉∘∷ʳ : ∀ {Γ σ τ₁ τ₂} (t : Tm Γ σ) (ns : Sp Γ σ (τ₁ ⇒ τ₂)) (n : Nf Γ τ₁) →
+  t ·⌈ ns ∷ʳ n ⌉ ≈βη  (t ·⌈ ns ⌉) ·⌈ n ∷ [] ⌉
 
-·⌈⌉∘,: t ε n =
+·⌈⌉∘∷ʳ t [] n =
   βη-refl
-·⌈⌉∘,: t (n′ , ns) n =
-  ·⌈⌉∘,: (t · ⌈ n′ ⌉) ns n
+·⌈⌉∘∷ʳ t (n′ ∷ ns) n =
+  ·⌈⌉∘∷ʳ (t · ⌈ n′ ⌉) ns n
 
 mutual
 
@@ -212,22 +212,22 @@ mutual
 
   ⌈⌉∘⇗ⁿ x (ƛⁿ n) = begin
     ⌈ x ⇗ⁿ ƛⁿ n ⌉
-      ≡⟨ refl ⟩
+      ≡⟨⟩
     ƛ ⌈ vs x ⇗ⁿ n ⌉
       ≈⟨ ƛ-cong (⌈⌉∘⇗ⁿ (vs x) n) ⟩
     ƛ (vs x ⇗ ⌈ n ⌉)
-      ≡⟨ refl ⟩
+      ≡⟨⟩
     x ⇗ ⌈ ƛⁿ n ⌉
     ∎
     where open βη-Reasoning
 
   ⌈⌉∘⇗ⁿ x (x′ ·ⁿ ns) = begin
     ⌈ x ⇗ⁿ (x′ ·ⁿ ns) ⌉
-      ≡⟨ refl ⟩
+      ≡⟨⟩
     var (x ⇗ˣ x′) ·⌈ x ⇗ˢ ns ⌉
       ≈⟨ ·⌈⌉∘⇗ⁿ x (var x′) ns ⟩
     x ⇗ (var x′ ·⌈ ns ⌉)
-      ≡⟨ refl ⟩
+      ≡⟨⟩
     x ⇗ ⌈ x′ ·ⁿ ns ⌉
     ∎
     where open βη-Reasoning
@@ -236,20 +236,20 @@ mutual
              (t : Tm (Γ - x) τ₁) (ns : Sp (Γ - x) τ₁ τ₂) →
              (x ⇗ t) ·⌈ x ⇗ˢ ns ⌉ ≈βη x ⇗ (t ·⌈ ns ⌉)
 
-  ·⌈⌉∘⇗ⁿ x t ε =
+  ·⌈⌉∘⇗ⁿ x t [] =
     βη-refl
 
-  ·⌈⌉∘⇗ⁿ x t (n , ns) = begin
-    (x ⇗ t) ·⌈ x ⇗ˢ (n , ns) ⌉
-      ≡⟨ refl ⟩
+  ·⌈⌉∘⇗ⁿ x t (n ∷ ns) = begin
+    (x ⇗ t) ·⌈ x ⇗ˢ (n ∷ ns) ⌉
+      ≡⟨⟩
     ((x ⇗ t) · ⌈ x ⇗ⁿ n ⌉) ·⌈ x ⇗ˢ ns ⌉
       ≈⟨ ·⌈⌉-cong (x ⇗ˢ ns)
                   (·-cong βη-refl (⌈⌉∘⇗ⁿ x n)) ⟩
     ((x ⇗ t) · (x ⇗ ⌈ n ⌉)) ·⌈ x ⇗ˢ ns ⌉
       ≈⟨ ·⌈⌉∘⇗ⁿ x (t · ⌈ n ⌉) ns ⟩
     x ⇗ ((t · ⌈ n ⌉) ·⌈ ns ⌉)
-      ≡⟨ refl ⟩
-    x ⇗ (t ·⌈ n , ns ⌉)
+      ≡⟨⟩
+    x ⇗ (t ·⌈ n ∷ ns ⌉)
     ∎
     where open βη-Reasoning
 
@@ -263,13 +263,13 @@ mutual
 
 ⌈⌉∘·η {τ₁ ⇒ τ₂} x ns = begin
   ⌈ x ·η ns ⌉
-    ≡⟨ refl ⟩
-  ƛ ⌈ vs x ·η ((vz ⇗ˢ ns) ,: (vz ·η ε)) ⌉
-    ≈⟨ ƛ-cong (⌈⌉∘·η (vs x) ((vz ⇗ˢ ns) ,: (vz ·η ε))) ⟩
-  ƛ (var (vs x) ·⌈ (vz ⇗ˢ ns) ,: (vz ·η ε) ⌉)
-    ≈⟨ ƛ-cong (·⌈⌉∘,: (var (vs x)) (vz ⇗ˢ ns) (vz ·η ε)) ⟩
-  ƛ ((var (vs x) ·⌈ vz ⇗ˢ ns ⌉) · ⌈ vz ·η ε ⌉)
-    ≈⟨ ƛ-cong (·-cong (·⌈⌉∘⇗ⁿ vz (var x) ns) (⌈⌉∘·η vz ε)) ⟩
+    ≡⟨⟩
+  ƛ ⌈ vs x ·η ((vz ⇗ˢ ns) ∷ʳ (vz ·η [])) ⌉
+    ≈⟨ ƛ-cong (⌈⌉∘·η (vs x) ((vz ⇗ˢ ns) ∷ʳ (vz ·η []))) ⟩
+  ƛ (var (vs x) ·⌈ (vz ⇗ˢ ns) ∷ʳ (vz ·η []) ⌉)
+    ≈⟨ ƛ-cong (·⌈⌉∘∷ʳ (var (vs x)) (vz ⇗ˢ ns) (vz ·η [])) ⟩
+  ƛ ((var (vs x) ·⌈ vz ⇗ˢ ns ⌉) · ⌈ vz ·η [] ⌉)
+    ≈⟨ ƛ-cong (·-cong (·⌈⌉∘⇗ⁿ vz (var x) ns) (⌈⌉∘·η vz [])) ⟩
   ƛ ((vz ⇗ (var x ·⌈ ns ⌉)) · var vz)
     ≈⟨ ≈-η ⟩
   var x ·⌈ ns ⌉
@@ -285,13 +285,13 @@ mutual
 
   ⌈⌉∘[≔] (ƛⁿ n) x u = begin
     ⌈ ƛⁿ n [ x ≔ u ] ⌉
-      ≡⟨ refl ⟩
+      ≡⟨⟩
     ƛ ⌈ n [ vs x ≔ vz ⇗ⁿ u ] ⌉
       ≈⟨ ƛ-cong (⌈⌉∘[≔] n (vs x) (vz ⇗ⁿ u)) ⟩
     ƛ (substTm ⌈ n ⌉ (vs x) ⌈ vz ⇗ⁿ u ⌉)
       ≈⟨ ƛ-cong (substTm-cong ⌈ n ⌉ (vs x) (⌈⌉∘⇗ⁿ vz u)) ⟩
     ƛ (substTm ⌈ n ⌉ (vs x) (vz ⇗ ⌈ u ⌉))
-      ≡⟨ refl ⟩
+      ≡⟨⟩
     substTm ⌈ ƛⁿ n ⌉ x ⌈ u ⌉
     ∎
     where open βη-Reasoning
@@ -323,20 +323,20 @@ mutual
     (x : Var Γ σ) (u : Nf (Γ - x) σ) →
     substTm t x ⌈ u ⌉ ·⌈ ns < x ≔ u > ⌉ ≈βη substTm (t ·⌈ ns ⌉) x ⌈ u ⌉
 
-  ⌈⌉∘<≔> t ε x u =
+  ⌈⌉∘<≔> t [] x u =
     βη-refl
-  ⌈⌉∘<≔> t (n , ns) x u = begin
-    substTm t x ⌈ u ⌉ ·⌈ (n , ns) < x ≔ u > ⌉
-      ≡⟨ refl ⟩
+  ⌈⌉∘<≔> t (n ∷ ns) x u = begin
+    substTm t x ⌈ u ⌉ ·⌈ (n ∷ ns) < x ≔ u > ⌉
+      ≡⟨⟩
     (substTm t x ⌈ u ⌉ · ⌈ n [ x ≔ u ] ⌉) ·⌈ ns < x ≔ u > ⌉
       ≈⟨ ·⌈⌉-cong (ns < x ≔ u >) (·-cong βη-refl (⌈⌉∘[≔] n x u))  ⟩
     (substTm t x ⌈ u ⌉ · substTm ⌈ n ⌉ x ⌈ u ⌉ ) ·⌈ ns < x ≔ u > ⌉
-      ≡⟨ refl ⟩
+      ≡⟨⟩
     substTm (t · ⌈ n ⌉) x ⌈ u ⌉ ·⌈ ns < x ≔ u > ⌉
       ≈⟨ ⌈⌉∘<≔> (t · ⌈ n ⌉) ns x u ⟩ 
     substTm ((t · ⌈ n ⌉) ·⌈ ns ⌉) x ⌈ u ⌉
-      ≡⟨ refl ⟩
-    substTm (t ·⌈ n , ns ⌉) x ⌈ u ⌉
+      ≡⟨⟩
+    substTm (t ·⌈ n ∷ ns ⌉) x ⌈ u ⌉
     ∎
     where open βη-Reasoning
 
@@ -345,17 +345,17 @@ mutual
   ⌈⌉∘◇ : ∀ {Γ σ} (n : Nf Γ σ) (ns : Sp Γ σ ○) →
     ⌈ n ◇ ns ⌉ ≈βη ⌈ n ⌉ ·⌈ ns ⌉
 
-  ⌈⌉∘◇ n ε = βη-refl
-  ⌈⌉∘◇ n (n′ , ns) = begin
-    ⌈ n ◇ (n′ , ns) ⌉
-      ≡⟨ refl ⟩
+  ⌈⌉∘◇ n [] = βη-refl
+  ⌈⌉∘◇ n (n′ ∷ ns) = begin
+    ⌈ n ◇ (n′ ∷ ns) ⌉
+      ≡⟨⟩
     ⌈ (n ·β n′) ◇ ns ⌉
       ≈⟨ ⌈⌉∘◇ (n ·β n′) ns ⟩
     ⌈ n ·β n′ ⌉ ·⌈ ns ⌉
       ≈⟨ ·⌈⌉-cong ns (⌈⌉∘·β n n′) ⟩
     (⌈ n ⌉ · ⌈ n′ ⌉) ·⌈ ns ⌉
-      ≡⟨ refl ⟩
-    ⌈ n ⌉ ·⌈ n′ , ns ⌉
+      ≡⟨⟩
+    ⌈ n ⌉ ·⌈ n′ ∷ ns ⌉
     ∎
     where open βη-Reasoning
 
@@ -366,13 +366,13 @@ mutual
 
   ⌈⌉∘·β (ƛⁿ n₁) n₂ = begin
     ⌈ ƛⁿ n₁ ·β n₂ ⌉
-      ≡⟨ refl ⟩
+      ≡⟨⟩
     ⌈ n₁ [ vz ≔ n₂ ] ⌉
       ≈⟨ ⌈⌉∘[≔] n₁ vz n₂ ⟩
     substTm ⌈ n₁ ⌉ vz ⌈ n₂ ⌉
       ≈⟨ βη-sym ≈-β ⟩
     ƛ ⌈ n₁ ⌉ · ⌈ n₂ ⌉
-      ≡⟨ refl ⟩
+      ≡⟨⟩
     ⌈ ƛⁿ n₁ ⌉ · ⌈ n₂ ⌉
     ∎
     where open βη-Reasoning
@@ -388,17 +388,17 @@ mutual
 ⌈⌉∘nf : ∀ {Γ σ} (t : Tm Γ σ) → ⌈ nf t ⌉ ≈βη t
 
 ⌈⌉∘nf (var x) = begin
-  ⌈ x ·η ε ⌉
-    ≈⟨ ⌈⌉∘·η x ε ⟩
-  var x ·⌈ ε ⌉
-    ≡⟨ refl ⟩
+  ⌈ x ·η [] ⌉
+    ≈⟨ ⌈⌉∘·η x [] ⟩
+  var x ·⌈ [] ⌉
+    ≡⟨⟩
   var x
   ∎
   where open βη-Reasoning
 
 ⌈⌉∘nf (ƛ t) = begin
   ⌈ nf (ƛ t) ⌉
-    ≡⟨ refl ⟩
+    ≡⟨⟩
   ƛ ⌈ nf t ⌉
     ≈⟨ ƛ-cong (⌈⌉∘nf t) ⟩
   ƛ t
@@ -407,7 +407,7 @@ mutual
 
 ⌈⌉∘nf (t₁ · t₂) = begin
   ⌈ nf (t₁ · t₂) ⌉
-    ≡⟨ refl ⟩
+    ≡⟨⟩
   ⌈ nf t₁ ·β nf t₂ ⌉
     ≈⟨ ⌈⌉∘·β (nf t₁) (nf t₂) ⟩
   ⌈ nf t₁ ⌉ · ⌈ nf t₂ ⌉

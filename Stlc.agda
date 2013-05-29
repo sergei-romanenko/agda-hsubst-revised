@@ -5,6 +5,7 @@ open import Data.Sum
 
 open import Relation.Binary.PropositionalEquality
 
+
 -- Types
 
 data Ty : Set where
@@ -26,6 +27,8 @@ data Var : Con → Ty → Set where
 
 -- Terms
 
+infixl 6 _·_
+
 data Tm : Con → Ty → Set where
   var : ∀ {Γ σ} → (x : Var Γ σ) → Tm Γ σ
   ƛ   : ∀ {Γ σ τ} → (t : Tm (Γ , σ) τ) → Tm Γ (σ ⇒ τ)
@@ -38,13 +41,23 @@ _-_ : {σ : Ty} → (Γ : Con) → (x : Var Γ σ) → Con
 (Γ , σ) - vz = Γ
 (Γ , τ) - (vs x) = (Γ - x) , τ
 
--- Weakening
+-- Variable weakening (shifting)
+
+infix 7 _⇗ˣ_ _⇗_
 
 _⇗ˣ_ : ∀ {Γ σ τ} (x : Var Γ σ) → (v : Var (Γ - x) τ) →  Var Γ τ
 
 vz   ⇗ˣ v = vs v
 vs x ⇗ˣ vz = vz
 vs x ⇗ˣ vs v = vs (x ⇗ˣ v)
+
+-- Term weakening (shifting)
+
+_⇗_ : ∀ {Γ σ τ} (x : Var Γ σ) → (v : Tm (Γ - x) τ) →  Tm Γ τ
+
+x ⇗ var v = var (x ⇗ˣ v)
+x ⇗ ƛ t = ƛ (vs x ⇗ t)
+x ⇗ (t₁ · t₂) = (x ⇗ t₁) · (x ⇗ t₂)
 
 -- Variable equality
 
@@ -60,14 +73,6 @@ varDiff (vs x) vz = vs x ↗ˣ vz
 varDiff (vs x) (vs v) with varDiff x v
 varDiff (vs x) (vs .x) | ⟳ˣ = ⟳ˣ
 varDiff (vs x) (vs .(x ⇗ˣ v)) | .x ↗ˣ v = vs x ↗ˣ vs v
-
--- Term weakening
-
-_⇗_ : ∀ {Γ σ τ} (x : Var Γ σ) → (v : Tm (Γ - x) τ) →  Tm Γ τ
-
-x ⇗ var v = var (x ⇗ˣ v)
-x ⇗ ƛ t = ƛ (vs x ⇗ t)
-x ⇗ (t₁ · t₂) = (x ⇗ t₁) · (x ⇗ t₂)
 
 -- Substitution
 
