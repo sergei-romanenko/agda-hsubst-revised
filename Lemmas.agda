@@ -9,6 +9,11 @@ open import Normalization
 open import BetaEta
 
 
+
+infix 7 _⇘ˣ_
+infix 6 _<,<_
+infix 5 _/Var/_ _/Tm/_ _/Nf/_ _/Sp/_
+
 -- _<,<_
 -- `Γ₁≡Γ₂ <,< σ` is a shortcut for `cong (flip _,_ σ) Γ₁≡Γ₂`
 
@@ -37,8 +42,6 @@ refl /Tm/ t = t
 
 
 -- _⇘ˣ_
-
-infix 7 _⇘ˣ_
 
 _⇘ˣ_ : ∀ {Γ σ τ} (x : Var Γ σ) (y : Var (Γ - x) τ) → Var (Γ - (x ⇗ˣ y)) σ
 
@@ -169,6 +172,18 @@ refl /Sp/ ns = ns
 /Nf/∘·ⁿ : ∀ {σ Γ₁ Γ₂} (p : Γ₁ ≡ Γ₂) (x : Var Γ₁ σ) (ns : Sp Γ₁ σ ○) →
   p /Nf/ (x ·ⁿ ns) ≡ (p /Var/ x) ·ⁿ (p /Sp/ ns)
 /Nf/∘·ⁿ refl _ _ = refl
+
+-- /Nf/∘<,<
+
+/Nf/∘<,< : ∀ {σ τ Γ₁ Γ₂} (p : Γ₁ ≡ Γ₂) (n : Nf Γ₁ τ) →
+  (p <,< σ) /Nf/ (vz ⇗ⁿ n) ≡ vz ⇗ⁿ (p /Nf/ n)
+/Nf/∘<,< refl n = refl
+
+-- /Nf/∘◇
+
+/Nf/∘◇ : ∀ {σ τ Γ₁ Γ₂} (p : Γ₁ ≡ Γ₂) (n : Nf Γ₁ σ) (ns : Sp Γ₁ σ τ) →
+  p /Nf/ (n ◇ ns) ≡ (p /Nf/ n) ◇ (p /Sp/ ns)
+/Nf/∘◇ refl _ _ = refl
 
 -- /Sp/∘[]
 
