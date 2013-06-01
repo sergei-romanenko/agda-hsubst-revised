@@ -235,3 +235,13 @@ refl /Sp/ ns = ns
   (vs x ⇗ˣ vs y) ⇗ˣ ((vs x ⇘ˣ vs y) ⇗ˣ (-∘- (vs x) (vs y) /Var/ vs v))
   ∎
   where open ≡-Reasoning
+
+
+-- ⇗⇘ˣ-id
+
+⇗⇘ˣ-id : ∀ {Γ σ τ} (x : Var Γ σ) (y : Var (Γ - x) τ) →
+  (x ⇗ˣ y) ⇗ˣ (x ⇘ˣ y) ≡ x
+
+⇗⇘ˣ-id vz y = refl
+⇗⇘ˣ-id (vs x) vz = refl
+⇗⇘ˣ-id (vs x) (vs y) = cong vs (⇗⇘ˣ-id x y)
