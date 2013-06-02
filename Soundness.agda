@@ -286,7 +286,6 @@ nf∘⇗ x (t₁ · t₂) = begin
 <≔>∘∷ʳ (n′ ∷ ns) n x u =
   cong (_∷_ (n′ [ x ≔ u ])) (<≔>∘∷ʳ ns n x u)
 
-
 mutual
 
   [≔]∘·η∘⇗ˣ : ∀ {τ₂ Γ σ τ₁}
@@ -318,18 +317,6 @@ mutual
     vz ⇗ˢ (ns < x ≔ u >) ∷ʳ vz ·η []
     ∎
     where open ≡-Reasoning
-
-{-
-postulate
-
-  ⇗ⁿ∘[≔] : ∀ {Γ σ σ′ τ} (x : Var Γ σ)
-             (n : Nf (Γ - x) τ) (u : Nf (Γ - x) σ′) →
-    x ⇗ⁿ (n [ vz ≔ u ]) ≡ (vs x ⇗ⁿ n) [ vz ≔ x ⇗ⁿ u ]
-
-  ⇗ⁿ∘[≔] : ∀ {Γ σ τ₁ τ₂} (x : Var Γ σ)
-             (n₁  : Nf ((Γ - x) , τ₁) τ₂) (n₂  : Nf (Γ - x) τ₁) →
-    x ⇗ⁿ (n₁ [ vz ≔ n₂ ]) ≡ (vs x ⇗ⁿ n₁) [ vz ≔ x ⇗ⁿ n₂ ]
--}
 
 
 -- x ↷ y means that two variables are in the same context and vs y = x .
@@ -472,6 +459,7 @@ mutual
     n ∷ ns
     ∎
     where open ≡-Reasoning
+
 
 mutual
 
@@ -691,17 +679,27 @@ mutual
       ≡⟨ /Nf/∘◇ (-∘- x v) u₂ ((ns < x ≔ u₁ >) < v ≔ u₂ >) ⟩
     (-∘- x v /Nf/ u₂) ◇ (-∘- x v /Sp/ (ns < x ≔ u₁ >) < v ≔ u₂ >)
       ≡⟨ cong₂ _◇_ refl (/Sp/∘<≔>∘<≔> x u₁ v u₂ ns) ⟩
-    (-∘- x v /Nf/ u₂) ◇
+    (-∘- x v /Nf/ u₂)
+      ◇
+      ((ns < x ⇗ˣ v ≔ (x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >)
+           < x ⇘ˣ v ≔ -∘- x v /Nf/ u₁ [ v ≔ u₂ ] >)
+      ≡⟨ cong (flip _◇_ ((ns < x ⇗ˣ v ≔ (x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >)
+                             < x ⇘ˣ v ≔ (-∘- x v /Nf/ u₁ [ v ≔ u₂ ]) >))
+              (sym $ ⇗ⁿ∘[≔]-id (x ⇘ˣ v)
+                (-∘- x v /Nf/ u₁ [ v ≔ u₂ ]) (-∘- x v /Nf/ u₂)) ⟩
+    ((x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) [ x ⇘ˣ v ≔ -∘- x v /Nf/ u₁ [ v ≔ u₂ ] ])
+      ◇
       ((ns < x ⇗ˣ v ≔ (x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >)
         < x ⇘ˣ v ≔ -∘- x v /Nf/ u₁ [ v ≔ u₂ ] >)
-      ≡⟨ {!!} ⟩
-    ((x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) ◇
+      ≡⟨ sym $ [≔]∘◇ (x ⇘ˣ v)
+             (-∘- x v /Nf/ u₁ [ v ≔ u₂ ]) ((x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂))
+                        (ns < x ⇗ˣ v ≔ (x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >) ⟩
+    (((x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂))
+      ◇
       (ns < x ⇗ˣ v ≔ (x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >))
-        [ x ⇘ˣ v ≔ -∘- x v /Nf/ u₁ [ v ≔ u₂ ] ]
+        [ x ⇘ˣ v ≔ (-∘- x v /Nf/ u₁ [ v ≔ u₂ ]) ]
     ∎
-    where
-    open ≡-Reasoning
-        
+    where open ≡-Reasoning
 
   /Nf/∘[≔]∘[≔] {○} x u₁ y u₂ (.(x ⇗ˣ (y ⇗ˣ v)) ·ⁿ ns)
     | .x ↗ˣ .(y ⇗ˣ v) | .y ↗ˣ v
@@ -821,7 +819,7 @@ mutual
     where open ≡-Reasoning
 
 
--- Normalization and substitution commute.
+-- nf∘substTm
 
 nf∘substTm : ∀ {Γ σ τ} (t : Tm Γ τ) (x : Var Γ σ) (u : Tm (Γ - x) σ) →
   nf (substTm t x u) ≡ (nf t) [ x ≔ nf u ]
