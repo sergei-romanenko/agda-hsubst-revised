@@ -1,4 +1,39 @@
+-- Based on 
+--
+-- Chantal Keller and Thorsten Altenkirch. 2010.
+-- Hereditary substitutions for simple types, formalized.
+-- In Proceedings of the third ACM SIGPLAN workshop
+-- on Mathematically structured functional programming (MSFP '10).
+-- ACM, New York, NY, USA, 3-10.
+--
+-- and
+--
+-- Chantal Keller. 2010.
+-- The decidability of the βη-equivalence using hereditary substitutions.  
+-- <http://www.lix.polytechnique.fr/~keller/Recherche/hsubst.html>
+--
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-- Copyright Thorsten Altenkirch and Chantal Keller, 2010
+-- Modified by Sergei Romanenko, 2013
+
 module Lemmas where
+
+--
+-- Auxiliary lemmas
+--
 
 open import Function
 
@@ -7,7 +42,6 @@ open import Relation.Binary.PropositionalEquality as P
 open import Stlc
 open import Normalization
 open import BetaEta
-
 
 
 infix 7 _⇘ˣ_

@@ -1,4 +1,16 @@
+-- Based on 
+--
+-- Chantal Keller and Thorsten Altenkirch. 2010.
+-- Hereditary substitutions for simple types, formalized.
+-- In Proceedings of the third ACM SIGPLAN workshop
+-- on Mathematically structured functional programming (MSFP '10).
+-- ACM, New York, NY, USA, 3-10.
+
 module BetaEta where
+
+--
+-- Convertibility (βη-equivalence)
+--
 
 open import Relation.Binary
   using (Setoid)
