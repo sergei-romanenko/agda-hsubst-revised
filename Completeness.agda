@@ -52,21 +52,21 @@ open import Lemmas
 ⇗∘⇗ : ∀ {Γ σ₁ σ₂ τ} (x : Var Γ σ₁) (y : Var (Γ - x) σ₂)
            (t : Tm ((Γ - x) - y) τ) →
     x ⇗ (y ⇗ t) ≡
-      (x ⇗ˣ y) ⇗ ((x ⇘ˣ  y) ⇗ (-∘- x y /Tm/ t))
+      (x ⇗ˣ y) ⇗ ((x ⇙ˣ y) ⇗ (-∘- x y /Tm/ t))
 
 ⇗∘⇗ x y (var {σ = σ} x₁) = begin
   x ⇗ (y ⇗ var x₁)
     ≡⟨⟩
   var (x ⇗ˣ (y ⇗ˣ x₁))
     ≡⟨ cong var (⇗ˣ∘⇗ˣ x y x₁) ⟩
-  var ((x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ x₁)))
+  var ((x ⇗ˣ y) ⇗ˣ ((x ⇙ˣ y) ⇗ˣ (-∘- x y /Var/ x₁)))
     ≡⟨⟩
-  (x ⇗ˣ y) ⇗ var ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ x₁))
+  (x ⇗ˣ y) ⇗ var ((x ⇙ˣ y) ⇗ˣ (-∘- x y /Var/ x₁))
     ≡⟨⟩
-  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ var (-∘- x y /Var/ x₁))
-    ≡⟨ cong (λ t → (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ t))
+  (x ⇗ˣ y) ⇗ ((x ⇙ˣ y) ⇗ var (-∘- x y /Var/ x₁))
+    ≡⟨ cong (λ t → (x ⇗ˣ y) ⇗ ((x ⇙ˣ y) ⇗ t))
             (sym $ /Var/∘var (-∘- x y) x₁) ⟩
-  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ var x₁))
+  (x ⇗ˣ y) ⇗ ((x ⇙ˣ y) ⇗ (-∘- x y /Tm/ var x₁))
   ∎
   where open ≡-Reasoning
 
@@ -75,12 +75,12 @@ open import Lemmas
     ≡⟨⟩
   ƛ (vs x ⇗ (vs y ⇗ t))
     ≡⟨ cong ƛ (⇗∘⇗ (vs x) (vs y) t) ⟩
-  ƛ (vs (x ⇗ˣ y) ⇗ (vs (x ⇘ˣ y) ⇗ ((-∘- x y <,< σ) /Tm/ t)))
+  ƛ (vs (x ⇗ˣ y) ⇗ (vs (x ⇙ˣ y) ⇗ ((-∘- x y <,< σ) /Tm/ t)))
     ≡⟨⟩
-  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ ƛ ((-∘- x y <,< σ) /Tm/ t))
-    ≡⟨ cong (λ u → (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ u))
+  (x ⇗ˣ y) ⇗ ((x ⇙ˣ y) ⇗ ƛ ((-∘- x y <,< σ) /Tm/ t))
+    ≡⟨ cong (λ u → (x ⇗ˣ y) ⇗ ((x ⇙ˣ y) ⇗ u))
             (sym $ /Tm/∘ƛ (-∘- x y) t) ⟩
-  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ ƛ t))
+  (x ⇗ˣ y) ⇗ ((x ⇙ˣ y) ⇗ (-∘- x y /Tm/ ƛ t))
   ∎
   where open ≡-Reasoning
 
@@ -89,10 +89,10 @@ open import Lemmas
     ≡⟨⟩
   x ⇗ (y ⇗ t₁) · x ⇗ (y ⇗ t₂)
     ≡⟨ cong₂ _·_ (⇗∘⇗ x y t₁) (⇗∘⇗ x y t₂) ⟩
-  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ ((-∘- x y /Tm/ t₁) · (-∘- x y /Tm/ t₂)))
-    ≡⟨ cong (λ t → (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ t))
+  (x ⇗ˣ y) ⇗ ((x ⇙ˣ y) ⇗ ((-∘- x y /Tm/ t₁) · (-∘- x y /Tm/ t₂)))
+    ≡⟨ cong (λ t → (x ⇗ˣ y) ⇗ ((x ⇙ˣ y) ⇗ t))
             (sym $ /Tm/∘· (-∘- x y) t₁ t₂) ⟩
-  (x ⇗ˣ y) ⇗ ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ (t₁ · t₂)))
+  (x ⇗ˣ y) ⇗ ((x ⇙ˣ y) ⇗ (-∘- x y /Tm/ (t₁ · t₂)))
   ∎
   where open ≡-Reasoning
 
@@ -102,8 +102,8 @@ open import Lemmas
 ⇗∘substTm : ∀ {Γ σ σ′ τ} (x : Var Γ σ)
               (y : Var (Γ - x) σ′) (u : Tm ((Γ - x) - y) σ′)
               (t : Tm (Γ - x) τ) →
-          (x ⇘ˣ y) ⇗ (-∘- x y /Tm/ substTm t y u) ≡
-            substTm (x ⇗ t) (x ⇗ˣ y) ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ u))
+          (x ⇙ˣ y) ⇗ (-∘- x y /Tm/ substTm t y u) ≡
+            substTm (x ⇗ t) (x ⇗ˣ y) ((x ⇙ˣ y) ⇗ (-∘- x y /Tm/ u))
 
 ⇗∘substTm x y u (var x′) with varDiff y x′
 
@@ -112,52 +112,52 @@ open import Lemmas
 
 ⇗∘substTm x y u (var .(y ⇗ˣ v)) | .y ↗ˣ v
   rewrite ⇗ˣ∘⇗ˣ x y v
-        | varDiff-↗ˣ (x ⇗ˣ y) ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ v)) = begin
-  (x ⇘ˣ y) ⇗ (-∘- x y /Tm/ var v)
-    ≡⟨ cong (_⇗_ (x ⇘ˣ y)) (/Tm/∘var (-∘- x y) v) ⟩
-  (x ⇘ˣ y) ⇗ (var (-∘- x y /Var/ v))
+        | varDiff-↗ˣ (x ⇗ˣ y) ((x ⇙ˣ y) ⇗ˣ (-∘- x y /Var/ v)) = begin
+  (x ⇙ˣ y) ⇗ (-∘- x y /Tm/ var v)
+    ≡⟨ cong (_⇗_ (x ⇙ˣ y)) (/Tm/∘var (-∘- x y) v) ⟩
+  (x ⇙ˣ y) ⇗ (var (-∘- x y /Var/ v))
     ≡⟨⟩
-  var ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ v))
+  var ((x ⇙ˣ y) ⇗ˣ (-∘- x y /Var/ v))
   ∎
   where open ≡-Reasoning
 
 ⇗∘substTm x y u (ƛ {σ = σ}  t) = begin
-  (x ⇘ˣ y) ⇗ (-∘- x y /Tm/ substTm (ƛ t) y u)
+  (x ⇙ˣ y) ⇗ (-∘- x y /Tm/ substTm (ƛ t) y u)
     ≡⟨⟩
-  (x ⇘ˣ y) ⇗ (-∘- x y /Tm/ ƛ (substTm t (vs y) (vz ⇗ u)))
-    ≡⟨ cong (_⇗_ (x ⇘ˣ y)) (/Tm/∘ƛ (-∘- x y) (substTm t (vs y) (vz ⇗ u))) ⟩
-  (x ⇘ˣ y) ⇗ ƛ ((-∘- x y <,< σ) /Tm/ substTm t (vs y) (vz ⇗ u))
+  (x ⇙ˣ y) ⇗ (-∘- x y /Tm/ ƛ (substTm t (vs y) (vz ⇗ u)))
+    ≡⟨ cong (_⇗_ (x ⇙ˣ y)) (/Tm/∘ƛ (-∘- x y) (substTm t (vs y) (vz ⇗ u))) ⟩
+  (x ⇙ˣ y) ⇗ ƛ ((-∘- x y <,< σ) /Tm/ substTm t (vs y) (vz ⇗ u))
     ≡⟨⟩
-  ƛ ((vs x ⇘ˣ vs y) ⇗ ((-∘- (vs x) (vs y)) /Tm/ substTm t (vs y) (vz ⇗ u)))
+  ƛ ((vs x ⇙ˣ vs y) ⇗ ((-∘- (vs x) (vs y)) /Tm/ substTm t (vs y) (vz ⇗ u)))
     ≡⟨ cong ƛ (⇗∘substTm (vs x) (vs y) (vz ⇗ u) t) ⟩
   ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y))
-    (vs (x ⇘ˣ y) ⇗ ((-∘- x y <,< σ) /Tm/ (vz ⇗ u))))
-    ≡⟨ cong (λ z → ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y)) (vs (x ⇘ˣ y) ⇗ z)))
+    (vs (x ⇙ˣ y) ⇗ ((-∘- x y <,< σ) /Tm/ (vz ⇗ u))))
+    ≡⟨ cong (λ z → ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y)) (vs (x ⇙ˣ y) ⇗ z)))
             (/Tm/∘vz⇗ (-∘- x y) u) ⟩
-  ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y)) (vs (x ⇘ˣ y) ⇗ (vz ⇗ (-∘- x y /Tm/ u))))
+  ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y)) (vs (x ⇙ˣ y) ⇗ (vz ⇗ (-∘- x y /Tm/ u))))
     ≡⟨ cong (λ z → ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y)) z))
-            (⇗∘⇗ (vs (x ⇘ˣ y)) vz (-∘- x y /Tm/ u)) ⟩
-  ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y)) (vz ⇗ ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ u))))
+            (⇗∘⇗ (vs (x ⇙ˣ y)) vz (-∘- x y /Tm/ u)) ⟩
+  ƛ (substTm (vs x ⇗ t) (vs (x ⇗ˣ y)) (vz ⇗ ((x ⇙ˣ y) ⇗ (-∘- x y /Tm/ u))))
     ≡⟨⟩
-  substTm (x ⇗ ƛ t) (x ⇗ˣ y) ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ u))
+  substTm (x ⇗ ƛ t) (x ⇗ˣ y) ((x ⇙ˣ y) ⇗ (-∘- x y /Tm/ u))
   ∎
   where open ≡-Reasoning
 
 ⇗∘substTm x y u (t₁ · t₂) = begin
-  (x ⇘ˣ y) ⇗ (-∘- x y /Tm/ substTm (t₁ · t₂) y u)
+  (x ⇙ˣ y) ⇗ (-∘- x y /Tm/ substTm (t₁ · t₂) y u)
     ≡⟨⟩
-  (x ⇘ˣ y) ⇗ (-∘- x y /Tm/ (substTm t₁ y u · substTm t₂ y u))
-    ≡⟨ cong (λ t → (x ⇘ˣ y) ⇗ t)
+  (x ⇙ˣ y) ⇗ (-∘- x y /Tm/ (substTm t₁ y u · substTm t₂ y u))
+    ≡⟨ cong (λ t → (x ⇙ˣ y) ⇗ t)
             (/Tm/∘· (-∘- x y) (substTm t₁ y u) (substTm t₂ y u)) ⟩
-  (x ⇘ˣ y) ⇗ ((-∘- x y /Tm/ substTm t₁ y u) · (-∘- x y /Tm/ substTm t₂ y u))
+  (x ⇙ˣ y) ⇗ ((-∘- x y /Tm/ substTm t₁ y u) · (-∘- x y /Tm/ substTm t₂ y u))
     ≡⟨⟩
-  ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ substTm t₁ y u)) ·
-    ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ substTm t₂ y u))
+  ((x ⇙ˣ y) ⇗ (-∘- x y /Tm/ substTm t₁ y u)) ·
+    ((x ⇙ˣ y) ⇗ (-∘- x y /Tm/ substTm t₂ y u))
     ≡⟨ cong₂ _·_ (⇗∘substTm x y u t₁) (⇗∘substTm x y u t₂) ⟩
-  substTm (x ⇗ t₁) (x ⇗ˣ y) ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ u)) ·
-    substTm (x ⇗ t₂) (x ⇗ˣ y) ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ u))
+  substTm (x ⇗ t₁) (x ⇗ˣ y) ((x ⇙ˣ y) ⇗ (-∘- x y /Tm/ u)) ·
+    substTm (x ⇗ t₂) (x ⇗ˣ y) ((x ⇙ˣ y) ⇗ (-∘- x y /Tm/ u))
     ≡⟨⟩
-  substTm (x ⇗ (t₁ · t₂)) (x ⇗ˣ y) ((x ⇘ˣ y) ⇗ (-∘- x y /Tm/ u))
+  substTm (x ⇗ (t₁ · t₂)) (x ⇗ˣ y) ((x ⇙ˣ y) ⇗ (-∘- x y /Tm/ u))
   ∎
   where open ≡-Reasoning
 
@@ -414,7 +414,7 @@ mutual
 -- ⌈⌉∘nf - "completeness"
 --
 -- Normalization preserves the semantics!
--- (Hence, some authors would here prefer the term "soundness".
+-- (Hence, some authors would here prefer the term "soundness".)
 -- 
 
 ⌈⌉∘nf : ∀ {Γ σ} (t : Tm Γ σ) → ⌈ nf t ⌉ ≈βη t

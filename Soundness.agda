@@ -54,19 +54,19 @@ mutual
 
   ⇗ⁿ∘⇗ⁿ : ∀ {Γ σ τ ρ} (x : Var Γ σ) (y : Var (Γ - x) τ)
             (t : Nf ((Γ - x) - y) ρ) →
-    x ⇗ⁿ (y ⇗ⁿ t) ≡ (x ⇗ˣ y) ⇗ⁿ ((x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ t))
+    x ⇗ⁿ (y ⇗ⁿ t) ≡ (x ⇗ˣ y) ⇗ⁿ ((x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ t))
 
   ⇗ⁿ∘⇗ⁿ x y (ƛⁿ {σ = σ} t) = begin
     x ⇗ⁿ (y ⇗ⁿ ƛⁿ t)
       ≡⟨⟩
     ƛⁿ (vs x ⇗ⁿ (vs y ⇗ⁿ t))
       ≡⟨ cong ƛⁿ (⇗ⁿ∘⇗ⁿ (vs x) (vs y) t) ⟩
-    ƛⁿ (vs (x ⇗ˣ y) ⇗ⁿ (vs (x ⇘ˣ y) ⇗ⁿ ((-∘- x y <,< σ) /Nf/ t)))
+    ƛⁿ (vs (x ⇗ˣ y) ⇗ⁿ (vs (x ⇙ˣ y) ⇗ⁿ ((-∘- x y <,< σ) /Nf/ t)))
       ≡⟨⟩
-    (x ⇗ˣ y) ⇗ⁿ ((x ⇘ˣ y) ⇗ⁿ ƛⁿ ((-∘- x y <,< σ) /Nf/ t))
-      ≡⟨ cong (λ u → (x ⇗ˣ y) ⇗ⁿ ((x ⇘ˣ y) ⇗ⁿ u))
+    (x ⇗ˣ y) ⇗ⁿ ((x ⇙ˣ y) ⇗ⁿ ƛⁿ ((-∘- x y <,< σ) /Nf/ t))
+      ≡⟨ cong (λ u → (x ⇗ˣ y) ⇗ⁿ ((x ⇙ˣ y) ⇗ⁿ u))
               (sym $ /Nf/∘ƛⁿ (-∘- x y) t) ⟩
-    (x ⇗ˣ y) ⇗ⁿ ((x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ ƛⁿ t))
+    (x ⇗ˣ y) ⇗ⁿ ((x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ ƛⁿ t))
     ∎
     where open ≡-Reasoning
   
@@ -75,13 +75,13 @@ mutual
       ≡⟨⟩
     (x ⇗ˣ (y ⇗ˣ x′)) ·ⁿ (x ⇗ˢ (y ⇗ˢ ns))
       ≡⟨ cong₂ _·ⁿ_ (⇗ˣ∘⇗ˣ x y x′) (⇗ˢ∘⇗ˢ x y ns) ⟩
-    ((x ⇗ˣ y) ⇗ˣ ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ x′))) ·ⁿ
-      ((x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ (-∘- x y /Sp/ ns)))
+    ((x ⇗ˣ y) ⇗ˣ ((x ⇙ˣ y) ⇗ˣ (-∘- x y /Var/ x′))) ·ⁿ
+      ((x ⇗ˣ y) ⇗ˢ ((x ⇙ˣ y) ⇗ˢ (-∘- x y /Sp/ ns)))
       ≡⟨⟩
-    (x ⇗ˣ y) ⇗ⁿ ((x ⇘ˣ y) ⇗ⁿ ((-∘- x y /Var/ x′) ·ⁿ (-∘- x y /Sp/ ns)))
-      ≡⟨ cong (λ n → (x ⇗ˣ y) ⇗ⁿ ((x ⇘ˣ y) ⇗ⁿ n))
+    (x ⇗ˣ y) ⇗ⁿ ((x ⇙ˣ y) ⇗ⁿ ((-∘- x y /Var/ x′) ·ⁿ (-∘- x y /Sp/ ns)))
+      ≡⟨ cong (λ n → (x ⇗ˣ y) ⇗ⁿ ((x ⇙ˣ y) ⇗ⁿ n))
               (sym $ /Nf/∘·ⁿ (-∘- x y) x′ ns) ⟩
-    (x ⇗ˣ y) ⇗ⁿ ((x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ (x′ ·ⁿ ns)))
+    (x ⇗ˣ y) ⇗ⁿ ((x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ (x′ ·ⁿ ns)))
     ∎
     where open ≡-Reasoning
 
@@ -91,15 +91,15 @@ mutual
   ⇗ˢ∘⇗ˢ : ∀ {Γ σ τ ρ α} (x : Var Γ σ) (y : Var (Γ - x) τ)
             (ns : Sp ((Γ - x) - y) ρ α) →
     x ⇗ˢ (y ⇗ˢ ns) ≡
-    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ (-∘- x y /Sp/ ns))
+    (x ⇗ˣ y) ⇗ˢ ((x ⇙ˣ y) ⇗ˢ (-∘- x y /Sp/ ns))
 
   ⇗ˢ∘⇗ˢ x y [] = begin
     x ⇗ˢ (y ⇗ˢ [])
       ≡⟨⟩
-    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ [])
-      ≡⟨ cong (λ ns → (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ ns))
+    (x ⇗ˣ y) ⇗ˢ ((x ⇙ˣ y) ⇗ˢ [])
+      ≡⟨ cong (λ ns → (x ⇗ˣ y) ⇗ˢ ((x ⇙ˣ y) ⇗ˢ ns))
               (sym $ /Sp/∘[] (-∘- x y)) ⟩
-    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ (-∘- x y /Sp/ []))
+    (x ⇗ˣ y) ⇗ˢ ((x ⇙ˣ y) ⇗ˢ (-∘- x y /Sp/ []))
     ∎
     where open ≡-Reasoning
 
@@ -108,13 +108,13 @@ mutual
       ≡⟨⟩
     x ⇗ⁿ (y ⇗ⁿ n) ∷ x ⇗ˢ (y ⇗ˢ ns)
       ≡⟨ cong₂ _∷_ (⇗ⁿ∘⇗ⁿ x y n) (⇗ˢ∘⇗ˢ x y ns) ⟩
-    (x ⇗ˣ y) ⇗ⁿ ((x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ n)) ∷
-        (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ (-∘- x y /Sp/ ns))
+    (x ⇗ˣ y) ⇗ⁿ ((x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ n)) ∷
+        (x ⇗ˣ y) ⇗ˢ ((x ⇙ˣ y) ⇗ˢ (-∘- x y /Sp/ ns))
       ≡⟨⟩
-    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ ((-∘- x y /Nf/ n) ∷ (-∘- x y /Sp/ ns)))
-      ≡⟨ cong (λ ns₁ → (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ ns₁))
+    (x ⇗ˣ y) ⇗ˢ ((x ⇙ˣ y) ⇗ˢ ((-∘- x y /Nf/ n) ∷ (-∘- x y /Sp/ ns)))
+      ≡⟨ cong (λ ns₁ → (x ⇗ˣ y) ⇗ˢ ((x ⇙ˣ y) ⇗ˢ ns₁))
               (sym $ /Sp/∘∷ (-∘- x y) n ns) ⟩
-    (x ⇗ˣ y) ⇗ˢ ((x ⇘ˣ y) ⇗ˢ (-∘- x y /Sp/ (n ∷ ns)))
+    (x ⇗ˣ y) ⇗ˢ ((x ⇙ˣ y) ⇗ˢ (-∘- x y /Sp/ (n ∷ ns)))
     ∎
     where open ≡-Reasoning
 
@@ -191,28 +191,28 @@ mutual
 
   /Nf/∘[≔] : ∀ {Γ σ₁ σ₂ τ} (y : Var Γ σ₁)
       (x : Var (Γ - y) σ₂) (u : Nf ((Γ - y) - x) σ₂) (n : Nf (Γ - y) τ) →
-    (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ (n [ x ≔ u ])) ≡
-      (y ⇗ⁿ n) [ (y ⇗ˣ x) ≔ ((y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ u)) ]
+    (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ (n [ x ≔ u ])) ≡
+      (y ⇗ⁿ n) [ (y ⇗ˣ x) ≔ ((y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ u)) ]
 
   /Nf/∘[≔] y x u (ƛⁿ {σ = σ} {τ = τ} n) = begin
-    (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ (ƛⁿ n [ x ≔ u ]))
+    (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ (ƛⁿ n [ x ≔ u ]))
       ≡⟨⟩
-    (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ ƛⁿ (n [ vs x ≔ vz ⇗ⁿ u ]))
-      ≡⟨ cong (_⇗ⁿ_ (y ⇘ˣ x)) (/Nf/∘ƛⁿ (-∘- y x) (n [ vs x ≔ vz ⇗ⁿ u ])) ⟩
-    ƛⁿ (vs (y ⇘ˣ x) ⇗ⁿ
+    (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ ƛⁿ (n [ vs x ≔ vz ⇗ⁿ u ]))
+      ≡⟨ cong (_⇗ⁿ_ (y ⇙ˣ x)) (/Nf/∘ƛⁿ (-∘- y x) (n [ vs x ≔ vz ⇗ⁿ u ])) ⟩
+    ƛⁿ (vs (y ⇙ˣ x) ⇗ⁿ
            ((-∘- y x <,< σ) /Nf/ (n [ vs x ≔ vz ⇗ⁿ u ])))
       ≡⟨ cong ƛⁿ (/Nf/∘[≔] (vs y) (vs x) (vz ⇗ⁿ u) n) ⟩
     ƛⁿ ((vs y ⇗ⁿ n) [ vs (y ⇗ˣ x) ≔
-          vs (y ⇘ˣ x) ⇗ⁿ ((-∘- y x <,< σ) /Nf/ (vz ⇗ⁿ u)) ])
-      ≡⟨ cong (λ n′ → ƛⁿ (vs y ⇗ⁿ n [ vs (y ⇗ˣ x) ≔ vs (y ⇘ˣ x) ⇗ⁿ n′ ]))
+          vs (y ⇙ˣ x) ⇗ⁿ ((-∘- y x <,< σ) /Nf/ (vz ⇗ⁿ u)) ])
+      ≡⟨ cong (λ n′ → ƛⁿ (vs y ⇗ⁿ n [ vs (y ⇗ˣ x) ≔ vs (y ⇙ˣ x) ⇗ⁿ n′ ]))
               (/Nf/∘<,< (-∘- y x) u) ⟩
     ƛⁿ ((vs y ⇗ⁿ n) [ vs (y ⇗ˣ x) ≔
-            vs (y ⇘ˣ x) ⇗ⁿ (vz ⇗ⁿ (-∘- y x /Nf/ u)) ])
+            vs (y ⇙ˣ x) ⇗ⁿ (vz ⇗ⁿ (-∘- y x /Nf/ u)) ])
       ≡⟨ cong (λ n′ → ƛⁿ (vs y ⇗ⁿ n [ vs (y ⇗ˣ x) ≔ n′ ]))
-              (⇗ⁿ∘⇗ⁿ (vs (y ⇘ˣ x)) vz (-∘- y x /Nf/ u)) ⟩
-    ƛⁿ ((vs y ⇗ⁿ n) [ vs (y ⇗ˣ x) ≔ vz ⇗ⁿ ((y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ u)) ])
+              (⇗ⁿ∘⇗ⁿ (vs (y ⇙ˣ x)) vz (-∘- y x /Nf/ u)) ⟩
+    ƛⁿ ((vs y ⇗ⁿ n) [ vs (y ⇗ˣ x) ≔ vz ⇗ⁿ ((y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ u)) ])
       ≡⟨⟩
-    (y ⇗ⁿ ƛⁿ n) [ y ⇗ˣ x ≔ (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) ]
+    (y ⇗ⁿ ƛⁿ n) [ y ⇗ˣ x ≔ (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) ]
     ∎
     where open ≡-Reasoning
 
@@ -220,20 +220,20 @@ mutual
 
   /Nf/∘[≔] y x u (.x ·ⁿ ns) | ⟳ˣ
     rewrite varDiff-⟳ˣ (y ⇗ˣ x) = begin
-    (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ u ◇ (ns < x ≔ u >))
-      ≡⟨ cong (_⇗ⁿ_ (y ⇘ˣ x)) (/Nf/∘◇ (-∘- y x) u (ns < x ≔ u >)) ⟩
-    (y ⇘ˣ x) ⇗ⁿ ((-∘- y x /Nf/ u) ◇ (-∘- y x /Sp/ ns < x ≔ u >))
-      ≡⟨ ⇗ⁿ∘◇ (y ⇘ˣ x) (-∘- y x /Nf/ u) (-∘- y x /Sp/ ns < x ≔ u >) ⟩
-    (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) ◇ (y ⇘ˣ x) ⇗ˢ (-∘- y x /Sp/ ns < x ≔ u >)
+    (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ u ◇ (ns < x ≔ u >))
+      ≡⟨ cong (_⇗ⁿ_ (y ⇙ˣ x)) (/Nf/∘◇ (-∘- y x) u (ns < x ≔ u >)) ⟩
+    (y ⇙ˣ x) ⇗ⁿ ((-∘- y x /Nf/ u) ◇ (-∘- y x /Sp/ ns < x ≔ u >))
+      ≡⟨ ⇗ⁿ∘◇ (y ⇙ˣ x) (-∘- y x /Nf/ u) (-∘- y x /Sp/ ns < x ≔ u >) ⟩
+    (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) ◇ (y ⇙ˣ x) ⇗ˢ (-∘- y x /Sp/ ns < x ≔ u >)
       ≡⟨ cong₂ _◇_ refl (/Sp/∘<≔> y x u ns) ⟩
-    (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) ◇
-      (y ⇗ˢ ns < y ⇗ˣ x ≔ (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) >)
+    (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) ◇
+      (y ⇗ˢ ns < y ⇗ˣ x ≔ (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) >)
     ∎
     where open ≡-Reasoning
 
   /Nf/∘[≔] y x u (.(x ⇗ˣ v) ·ⁿ ns) | .x ↗ˣ v
     rewrite ⇗ˣ∘⇗ˣ y x v
-          | varDiff-↗ˣ (y ⇗ˣ x) ((y ⇘ˣ x) ⇗ˣ (-∘- y x /Var/ v))
+          | varDiff-↗ˣ (y ⇗ˣ x) ((y ⇙ˣ x) ⇗ˣ (-∘- y x /Var/ v))
           | /Nf/∘·ⁿ (-∘- y x) v (ns < x ≔ u >)
           | /Sp/∘<≔> y x u ns
     = refl
@@ -242,34 +242,34 @@ mutual
 
   /Sp/∘<≔> : ∀ {Γ σ₁  σ₂ τ₁ τ₂} (y : Var Γ σ₁)
     (x : Var (Γ - y) σ₂) (u : Nf ((Γ - y) - x) σ₂) (ns : Sp (Γ - y) τ₁ τ₂) →
-    (y ⇘ˣ x) ⇗ˢ (-∘- y x /Sp/ (ns < x ≔ u >)) ≡
-      (y ⇗ˢ ns) < (y ⇗ˣ x) ≔ ((y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ u)) >
+    (y ⇙ˣ x) ⇗ˢ (-∘- y x /Sp/ (ns < x ≔ u >)) ≡
+      (y ⇗ˢ ns) < (y ⇗ˣ x) ≔ ((y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ u)) >
 
   /Sp/∘<≔> y x u [] = begin
-    (y ⇘ˣ x) ⇗ˢ (-∘- y x /Sp/ [] < x ≔ u >)
+    (y ⇙ˣ x) ⇗ˢ (-∘- y x /Sp/ [] < x ≔ u >)
       ≡⟨⟩
-    (y ⇘ˣ x) ⇗ˢ (-∘- y x /Sp/ [])
-      ≡⟨ cong (_⇗ˢ_ (y ⇘ˣ x)) (/Sp/∘[] (-∘- y x)) ⟩
+    (y ⇙ˣ x) ⇗ˢ (-∘- y x /Sp/ [])
+      ≡⟨ cong (_⇗ˢ_ (y ⇙ˣ x)) (/Sp/∘[] (-∘- y x)) ⟩
     []
       ≡⟨⟩
-    y ⇗ˢ [] < y ⇗ˣ x ≔ (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) >
+    y ⇗ˢ [] < y ⇗ˣ x ≔ (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) >
     ∎
     where open ≡-Reasoning
 
   /Sp/∘<≔> y x u (n ∷ ns) = begin
-    (y ⇘ˣ x) ⇗ˢ (-∘- y x /Sp/ (n ∷ ns) < x ≔ u >)
+    (y ⇙ˣ x) ⇗ˢ (-∘- y x /Sp/ (n ∷ ns) < x ≔ u >)
       ≡⟨⟩
-    (y ⇘ˣ x) ⇗ˢ (-∘- y x /Sp/ (n [ x ≔ u ] ∷ ns < x ≔ u >))
-      ≡⟨ cong (_⇗ˢ_ (y ⇘ˣ x))
+    (y ⇙ˣ x) ⇗ˢ (-∘- y x /Sp/ (n [ x ≔ u ] ∷ ns < x ≔ u >))
+      ≡⟨ cong (_⇗ˢ_ (y ⇙ˣ x))
               (/Sp/∘∷ (-∘- y x) (n [ x ≔ u ]) (ns < x ≔ u >)) ⟩
-    (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ n [ x ≔ u ]) ∷
-      (y ⇘ˣ x) ⇗ˢ (-∘- y x /Sp/ ns < x ≔ u >)
+    (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ n [ x ≔ u ]) ∷
+      (y ⇙ˣ x) ⇗ˢ (-∘- y x /Sp/ ns < x ≔ u >)
       ≡⟨ cong₂ _∷_
                (/Nf/∘[≔] y x u n) (/Sp/∘<≔> y x u ns) ⟩
-    y ⇗ⁿ n [ y ⇗ˣ x ≔ (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) ] ∷
-      y ⇗ˢ ns < y ⇗ˣ x ≔ (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) >
+    y ⇗ⁿ n [ y ⇗ˣ x ≔ (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) ] ∷
+      y ⇗ˢ ns < y ⇗ˣ x ≔ (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) >
       ≡⟨⟩
-    y ⇗ˢ (n ∷ ns) < y ⇗ˣ x ≔ (y ⇘ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) >
+    y ⇗ˢ (n ∷ ns) < y ⇗ˣ x ≔ (y ⇙ˣ x) ⇗ⁿ (-∘- y x /Nf/ u) >
     ∎
     where open ≡-Reasoning
 
@@ -665,31 +665,31 @@ mutual
     (y : Var (Γ - x) σ₂) (u₂ : Nf ((Γ - x) - y) σ₂)
     (n : Nf Γ τ) →
     -∘- x y /Nf/ ((n [ x ≔ u₁ ]) [ y ≔ u₂ ]) ≡
-      (n [ x ⇗ˣ y ≔ (x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
-        [ x ⇘ˣ y ≔ -∘- x y /Nf/ (u₁ [ y ≔ u₂ ]) ]
+      (n [ x ⇗ˣ y ≔ (x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
+        [ x ⇙ˣ y ≔ -∘- x y /Nf/ (u₁ [ y ≔ u₂ ]) ]
 
   /Nf/∘[≔]∘[≔] {○} x u₁ y u₂ (v ·ⁿ ns) with varDiff x v
 
   /Nf/∘[≔]∘[≔] {○} x u₁ y u₂ (.x ·ⁿ ns) | ⟳ˣ = begin
     -∘- x y /Nf/ (u₁ ◇ (ns < x ≔ u₁ >)) [ y ≔ u₂ ]
       ≡⟨ helper ⟩
-    (((x ⇗ˣ y) ⇗ˣ (x ⇘ˣ y) ·ⁿ ns)
-      [ x ⇗ˣ y ≔ (x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
-      [ x ⇘ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] ]
-      ≡⟨ cong (λ x′ → ((x′ ·ⁿ ns) [ x ⇗ˣ y ≔ (x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
-                           [ x ⇘ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] ])
-           (⇗⇘ˣ-id x y) ⟩
+    (((x ⇗ˣ y) ⇗ˣ (x ⇙ˣ y) ·ⁿ ns)
+      [ x ⇗ˣ y ≔ (x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
+      [ x ⇙ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] ]
+      ≡⟨ cong (λ x′ → ((x′ ·ⁿ ns) [ x ⇗ˣ y ≔ (x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
+                           [ x ⇙ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] ])
+           (⇗⇙ˣ-id x y) ⟩
     ((x ·ⁿ ns)
-      [ x ⇗ˣ y ≔ (x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
-      [ x ⇘ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] ]
+      [ x ⇗ˣ y ≔ (x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
+      [ x ⇙ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] ]
     ∎
     where
     open ≡-Reasoning
     helper : -∘- x y /Nf/ (u₁ ◇ (ns < x ≔ u₁ >)) [ y ≔ u₂ ] ≡
-             (((x ⇗ˣ y) ⇗ˣ (x ⇘ˣ y) ·ⁿ ns) [ x ⇗ˣ y ≔
-                  (x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
-                   [ x ⇘ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] ]
-    helper rewrite varDiff-↗ˣ (x ⇗ˣ y) (x ⇘ˣ y) | varDiff-⟳ˣ (x ⇘ˣ y) = begin
+             (((x ⇗ˣ y) ⇗ˣ (x ⇙ˣ y) ·ⁿ ns) [ x ⇗ˣ y ≔
+                  (x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
+                   [ x ⇙ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] ]
+    helper rewrite varDiff-↗ˣ (x ⇗ˣ y) (x ⇙ˣ y) | varDiff-⟳ˣ (x ⇙ˣ y) = begin
       -∘- x y /Nf/ (u₁ ◇ (ns < x ≔ u₁ >)) [ y ≔ u₂ ]
         ≡⟨ cong (_/Nf/_ (-∘- x y)) ([≔]∘◇ y u₂ u₁ (ns < x ≔ u₁ >)) ⟩
       -∘- x y /Nf/ (u₁ [ y ≔ u₂ ]) ◇ ((ns < x ≔ u₁ >) < y ≔ u₂ >)
@@ -699,8 +699,8 @@ mutual
         ≡⟨ cong (_◇_ (-∘- x y /Nf/ u₁ [ y ≔ u₂ ]))
                 (/Sp/∘<≔>∘<≔> x u₁ y u₂ ns) ⟩
       (-∘- x y /Nf/ u₁ [ y ≔ u₂ ]) ◇
-        ((ns < x ⇗ˣ y ≔ (x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) >)
-          < x ⇘ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] >)
+        ((ns < x ⇗ˣ y ≔ (x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) >)
+          < x ⇙ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] >)
       ∎
 
   /Nf/∘[≔]∘[≔] {○} x u₁ y u₂ (.(x ⇗ˣ v) ·ⁿ ns) | .x ↗ˣ v  with varDiff y v
@@ -713,37 +713,37 @@ mutual
       ≡⟨ cong₂ _◇_ refl (/Sp/∘<≔>∘<≔> x u₁ v u₂ ns) ⟩
     (-∘- x v /Nf/ u₂)
       ◇
-      ((ns < x ⇗ˣ v ≔ (x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >)
-           < x ⇘ˣ v ≔ -∘- x v /Nf/ u₁ [ v ≔ u₂ ] >)
-      ≡⟨ cong (flip _◇_ ((ns < x ⇗ˣ v ≔ (x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >)
-                             < x ⇘ˣ v ≔ (-∘- x v /Nf/ u₁ [ v ≔ u₂ ]) >))
-              (sym $ ⇗ⁿ∘[≔]-id (x ⇘ˣ v)
+      ((ns < x ⇗ˣ v ≔ (x ⇙ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >)
+           < x ⇙ˣ v ≔ -∘- x v /Nf/ u₁ [ v ≔ u₂ ] >)
+      ≡⟨ cong (flip _◇_ ((ns < x ⇗ˣ v ≔ (x ⇙ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >)
+                             < x ⇙ˣ v ≔ (-∘- x v /Nf/ u₁ [ v ≔ u₂ ]) >))
+              (sym $ ⇗ⁿ∘[≔]-id (x ⇙ˣ v)
                 (-∘- x v /Nf/ u₁ [ v ≔ u₂ ]) (-∘- x v /Nf/ u₂)) ⟩
-    ((x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) [ x ⇘ˣ v ≔ -∘- x v /Nf/ u₁ [ v ≔ u₂ ] ])
+    ((x ⇙ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) [ x ⇙ˣ v ≔ -∘- x v /Nf/ u₁ [ v ≔ u₂ ] ])
       ◇
-      ((ns < x ⇗ˣ v ≔ (x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >)
-        < x ⇘ˣ v ≔ -∘- x v /Nf/ u₁ [ v ≔ u₂ ] >)
-      ≡⟨ sym $ [≔]∘◇ (x ⇘ˣ v)
-             (-∘- x v /Nf/ u₁ [ v ≔ u₂ ]) ((x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂))
-                        (ns < x ⇗ˣ v ≔ (x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >) ⟩
-    (((x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂))
+      ((ns < x ⇗ˣ v ≔ (x ⇙ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >)
+        < x ⇙ˣ v ≔ -∘- x v /Nf/ u₁ [ v ≔ u₂ ] >)
+      ≡⟨ sym $ [≔]∘◇ (x ⇙ˣ v)
+             (-∘- x v /Nf/ u₁ [ v ≔ u₂ ]) ((x ⇙ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂))
+                        (ns < x ⇗ˣ v ≔ (x ⇙ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >) ⟩
+    (((x ⇙ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂))
       ◇
-      (ns < x ⇗ˣ v ≔ (x ⇘ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >))
-        [ x ⇘ˣ v ≔ (-∘- x v /Nf/ u₁ [ v ≔ u₂ ]) ]
+      (ns < x ⇗ˣ v ≔ (x ⇙ˣ v) ⇗ⁿ (-∘- x v /Nf/ u₂) >))
+        [ x ⇙ˣ v ≔ (-∘- x v /Nf/ u₁ [ v ≔ u₂ ]) ]
     ∎
     where open ≡-Reasoning
 
   /Nf/∘[≔]∘[≔] {○} x u₁ y u₂ (.(x ⇗ˣ (y ⇗ˣ v)) ·ⁿ ns)
     | .x ↗ˣ .(y ⇗ˣ v) | .y ↗ˣ v
     rewrite ⇗ˣ∘⇗ˣ x y v
-          | varDiff-↗ˣ (x ⇗ˣ y) ((x ⇘ˣ y) ⇗ˣ (-∘- x y /Var/ v))
-          | varDiff-↗ˣ (x ⇘ˣ y) (-∘- x y /Var/ v) = begin
+          | varDiff-↗ˣ (x ⇗ˣ y) ((x ⇙ˣ y) ⇗ˣ (-∘- x y /Var/ v))
+          | varDiff-↗ˣ (x ⇙ˣ y) (-∘- x y /Var/ v) = begin
     -∘- x y /Nf/ v ·ⁿ ((ns < x ≔ u₁ >) < y ≔ u₂ >)
       ≡⟨ /Nf/∘·ⁿ (-∘- x y) v ((ns < x ≔ u₁ >) < y ≔ u₂ >) ⟩
     (-∘- x y /Var/ v) ·ⁿ (-∘- x y /Sp/ (ns < x ≔ u₁ >) < y ≔ u₂ >)
       ≡⟨ cong (_·ⁿ_ (-∘- x y /Var/ v)) (/Sp/∘<≔>∘<≔> x u₁ y u₂ ns) ⟩
     (-∘- x y /Var/ v) ·ⁿ
-      ((ns < x ⇗ˣ y ≔ (x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) >) < x ⇘ˣ y ≔
+      ((ns < x ⇗ˣ y ≔ (x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) >) < x ⇙ˣ y ≔
         -∘- x y /Nf/ u₁ [ y ≔ u₂ ] >)
     ∎
     where open ≡-Reasoning
@@ -755,26 +755,26 @@ mutual
       ≡⟨ /Nf/∘ƛⁿ (-∘- x y) ((n [ vs x ≔ vz ⇗ⁿ u₁ ]) [ vs y ≔ vz ⇗ⁿ u₂ ]) ⟩
     ƛⁿ (-∘- x y <,< τ₁ /Nf/ (n [ vs x ≔ vz ⇗ⁿ u₁ ]) [ vs y ≔ vz ⇗ⁿ u₂ ])
       ≡⟨ cong ƛⁿ (/Nf/∘[≔]∘[≔] (vs x) (vz ⇗ⁿ u₁) (vs y) (vz ⇗ⁿ u₂) n) ⟩
-    ƛⁿ ((n [ vs (x ⇗ˣ y) ≔ vs (x ⇘ˣ y) ⇗ⁿ (-∘- x y <,< τ₁ /Nf/ vz ⇗ⁿ u₂)])
-           [ vs (x ⇘ˣ y) ≔ (-∘- x y) <,< τ₁ /Nf/ (vz ⇗ⁿ u₁)
+    ƛⁿ ((n [ vs (x ⇗ˣ y) ≔ vs (x ⇙ˣ y) ⇗ⁿ (-∘- x y <,< τ₁ /Nf/ vz ⇗ⁿ u₂)])
+           [ vs (x ⇙ˣ y) ≔ (-∘- x y) <,< τ₁ /Nf/ (vz ⇗ⁿ u₁)
              [ vs y ≔ vz ⇗ⁿ u₂ ] ])
       ≡⟨ cong₂ (λ n₁ n₂ →
-           ƛⁿ ((n [ vs (x ⇗ˣ y) ≔ n₁ ]) [ vs (x ⇘ˣ y) ≔ n₂ ]))
+           ƛⁿ ((n [ vs (x ⇗ˣ y) ≔ n₁ ]) [ vs (x ⇙ˣ y) ≔ n₂ ]))
            helper₁ helper₂ ⟩
-    ƛⁿ ((n [ vs (x ⇗ˣ y) ≔ vz ⇗ⁿ ((x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂)) ])
-           [ vs (x ⇘ˣ y) ≔ vz ⇗ⁿ (-∘- x y /Nf/ u₁ [ y ≔ u₂ ]) ])
+    ƛⁿ ((n [ vs (x ⇗ˣ y) ≔ vz ⇗ⁿ ((x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂)) ])
+           [ vs (x ⇙ˣ y) ≔ vz ⇗ⁿ (-∘- x y /Nf/ u₁ [ y ≔ u₂ ]) ])
       ≡⟨⟩
-      (ƛⁿ n [ x ⇗ˣ y ≔ (x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
-            [ x ⇘ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] ]
+      (ƛⁿ n [ x ⇗ˣ y ≔ (x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
+            [ x ⇙ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] ]
     ∎
     where
     open ≡-Reasoning
     helper₁ = begin
-      vs (x ⇘ˣ y) ⇗ⁿ (-∘- x y <,< τ₁ /Nf/ vz ⇗ⁿ u₂)
-        ≡⟨ cong (_⇗ⁿ_ (vs (x ⇘ˣ y))) (/Nf/∘<,< (-∘- x y) u₂) ⟩
-      vs (x ⇘ˣ y) ⇗ⁿ (vz ⇗ⁿ (-∘- x y /Nf/ u₂))
-        ≡⟨ sym $ ⇗ⁿ∘⇗ⁿ vz (x ⇘ˣ y) (-∘- x y /Nf/ u₂) ⟩
-      vz ⇗ⁿ ((x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂))
+      vs (x ⇙ˣ y) ⇗ⁿ (-∘- x y <,< τ₁ /Nf/ vz ⇗ⁿ u₂)
+        ≡⟨ cong (_⇗ⁿ_ (vs (x ⇙ˣ y))) (/Nf/∘<,< (-∘- x y) u₂) ⟩
+      vs (x ⇙ˣ y) ⇗ⁿ (vz ⇗ⁿ (-∘- x y /Nf/ u₂))
+        ≡⟨ sym $ ⇗ⁿ∘⇗ⁿ vz (x ⇙ˣ y) (-∘- x y /Nf/ u₂) ⟩
+      vz ⇗ⁿ ((x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂))
       ∎
     helper₂ = begin
       -∘- x y <,< τ₁ /Nf/ vz ⇗ⁿ u₁ [ vs y ≔ vz ⇗ⁿ u₂ ]
@@ -791,8 +791,8 @@ mutual
     (y : Var (Γ - x) σ₂) (u₂ : Nf ((Γ - x) - y) σ₂)
     (ns : Sp Γ τ ○) →
     -∘- x y /Sp/ ((ns < x ≔ u₁ >) < y ≔ u₂ >) ≡
-        (ns < x ⇗ˣ y ≔ (x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) >)
-          < x ⇘ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] >
+        (ns < x ⇗ˣ y ≔ (x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) >)
+          < x ⇙ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] >
 
   /Sp/∘<≔>∘<≔> x u₁ y u₂ [] =
     /Sp/∘[] (-∘- x y)
@@ -808,13 +808,13 @@ mutual
       ≡⟨ cong₂ _∷_
                (/Nf/∘[≔]∘[≔] x u₁ y u₂ n)
                (/Sp/∘<≔>∘<≔> x u₁ y u₂ ns) ⟩
-    (n [ x ⇗ˣ y ≔ (x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
-      [ x ⇘ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] ]
+    (n [ x ⇗ˣ y ≔ (x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) ])
+      [ x ⇙ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] ]
         ∷
-    (ns < x ⇗ˣ y ≔ (x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) >)
-      < x ⇘ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] >
+    (ns < x ⇗ˣ y ≔ (x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) >)
+      < x ⇙ˣ y ≔ -∘- x y /Nf/ u₁ [ y ≔ u₂ ] >
     ≡⟨⟩
-      ((n ∷ ns) < x ⇗ˣ y ≔ (x ⇘ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) >) < x ⇘ˣ y ≔
+      ((n ∷ ns) < x ⇗ˣ y ≔ (x ⇙ˣ y) ⇗ⁿ (-∘- x y /Nf/ u₂) >) < x ⇙ˣ y ≔
       -∘- x y /Nf/ u₁ [ y ≔ u₂ ] >
     ∎
     where open ≡-Reasoning
@@ -894,7 +894,7 @@ nf∘substTm (t₁ · t₂) x u = begin
 -- ≈βη⇒nf≡ - "soundness". If two terms are βη-convertible to each other
 -- they have the same normal form.
 --
--- (Hence, some authors would here prefer the term "completeness".
+-- (Hence, some authors would here prefer the term "completeness".)
 -- 
 
 -- ≈βη⇒≡nf
